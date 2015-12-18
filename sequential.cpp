@@ -1,17 +1,16 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <map>
 #include <vector>
 
 typedef std::vector<std::vector<double>> vector_t;
 
 // Jakobi Verfahren
 template <typename Func>
-vector_t jakobi(vector_t     u,         // Eingabevector
-                Func         f,         // Eingabefunktion
-                const double h,         // Feinheit des Gitters
-                const double tolerance) // Abbruchkriterium
+vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
+                Func         f,                // Eingabefunktion
+                const double h,                // Feinheit des Gitters
+                const double change_threshold) // Abbruchkriterium
 {
     bool running = true;
     while (running) {
@@ -24,8 +23,8 @@ vector_t jakobi(vector_t     u,         // Eingabevector
                          + u_old[i][j + 1] + u_old[i + 1][j]
                          + h * h * f(i * h, j * h)) / 4;
 
-                // Haben sich die Werte noch innerhalb der Toleranz geändert?
-                running = running || (std::abs(u[i][j] - u_old[i][j]) > tolerance);
+                // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
+                running = running || (std::abs(u[i][j] - u_old[i][j]) > change_threshold);
             }
         }
     }
@@ -35,10 +34,10 @@ vector_t jakobi(vector_t     u,         // Eingabevector
 
 // Gauß-Seidel Verfahren
 template <typename Func>
-vector_t gauss_seidel(vector_t     u,         // Eingabevector
-                      Func         f,         // Eingabefunktion
-                      const double h,         // Feinheit des Gitters
-                      const double tolerance) // Abbruchkriterium
+vector_t gauss_seidel(vector_t     u,                // Eingabevector, mit Rand
+                      Func         f,                // Eingabefunktion
+                      const double h,                // Feinheit des Gitters
+                      const double change_threshold) // Abbruchkriterium
 {
     bool running = true;
     while (running) {
@@ -51,8 +50,8 @@ vector_t gauss_seidel(vector_t     u,         // Eingabevector
                          + u_old[i][j + 1] + u_old[i + 1][j]
                          + h * h * f(i * h, j * h)) / 4;
 
-                // Haben sich die Werte noch innerhalb der Toleranz geändert?
-                running = running || (std::abs(u[i][j] - u_old[i][j]) > tolerance);
+                // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
+                running = running || (std::abs(u[i][j] - u_old[i][j]) > change_threshold);
             }
         }
     }
@@ -77,10 +76,10 @@ int main(int argc, char **argv) {
             u[i][j] = 1.0;
 
     // Wende Verfahren an
-    std::map<std::string, vector_t> results;
-    const double precision = 0.00001;
-    results.emplace("Jakobi",      jakobi      (u, f, h, precision));
-    results.emplace("Gauß-Seidel", gauss_seidel(u, f, h, precision));
+    std::vector<std::pair<std::string, vector_t>> results;
+    const double change_threshold = 0.00001;
+    results.emplace_back("Jakobi",      jakobi      (u, f, h, change_threshold));
+    results.emplace_back("Gauß-Seidel", gauss_seidel(u, f, h, change_threshold));
 
     // Ausgabe Verfahren
     std::cout << std::fixed << std::setprecision(4);
