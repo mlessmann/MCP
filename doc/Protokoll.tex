@@ -1,0 +1,37 @@
+\documentclass[paper = a4]{scrartcl}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[autostyle = true, german = quotes]{csquotes} % Anführungszeichen
+
+\usepackage{amsmath}
+
+\begin{document}
+
+\subject{Praktikum Multicore"=Programmierung}
+\title{Protokoll zu Projekt~6: Mehrgittermethoden}
+\author{Florian Klemme \and Manuel Leßmann}
+\maketitle
+
+\section{Jakobi- und Gauß-Seidel-Verfahren}
+
+\begin{quote}
+    Programmieren Sie eine serielle Version des Jakobi-Verfahrens. Gegeben sei dazu [\dots] \(f(x, y) = 32(x(1 - x) + y(1 - y))\). Beachten Sie dabei auch die Randbedingungen [\(u(x, y) = 0 \quad \forall (x, y) \in \Gamma\)]. Verwenden Sie zur Überprüfung Ihres Programms auf Korrektheit die analytische Lösung \(u(x, y) = 16x(1 - x)y(1 - y) \quad \forall (x, y) \in \Omega\).
+\end{quote}
+
+Gemacht. Implementierung scheint auch korrekt zu sein, da nur eine minimale Abweichung zur analytischen Lösung besteht. Ansonsten gibt's hier nichts zu zeigen/schreiben. Kann wohl am Ende hier im Protokoll entfallen.
+
+\begin{quote}
+    Implementieren Sie ebenfalls eine serielle Version des Gauß-Seidel-Verfahrens. Vergleichen Sie die gewonnenen Ergebnisse mit den Ergebnissen des Jakobi-Verfahrens. Was fällt beim Vergleich der Iterationsschrittzahlen sowie der Laufzeiten beider Verfahren über verschiedenen Verfeinerungen (\(h = \frac{1}{2^l} \text{ mit } l = 1, 2, \dots, 6, \dots\)) auf?
+\end{quote}
+
+Der Unterschied zu Jakobi in der (sequenziellen) Implementierung ist marginal, daher habe ich sie kurzerhand hinzugefügt. Messungen habe ich noch keine angestellt.
+
+\begin{quote}
+    Messen Sie mit Hilfe der in a) angegebenen analytischen Lösung für beide Verfahren den maximalen Approximationsfehler mit Hilfe der euklidischen Norm in jedem Iterationsschritt und für ein gewähltes h und stellen Sie diesen graphisch dar.
+\end{quote}
+
+Hier ist mir noch nicht klar, was die euklidische Norm bedeuten soll / wie sie hier berechnet werden soll. Noch nicht implementiert.
+
+\end{document}
