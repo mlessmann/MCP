@@ -17,8 +17,8 @@ vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
         auto u_old = u; // Kopie
         running = false;
 
-        for (int i = 1; i < u.size() - 1; ++i) {
-            for (int j = 1; j < u.size() - 1; ++j) {
+        for (std::size_t i = 1; i < u.size() - 1; ++i) {
+            for (std::size_t j = 1; j < u.size() - 1; ++j) {
                 u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
                          + u_old[i][j + 1] + u_old[i + 1][j]
                          + h * h * f(i * h, j * h)) / 4;
@@ -46,8 +46,8 @@ vector_t gauss_seidel(vector_t     u,                // Eingabevector, mit Rand
         auto u_old = u; // Kopie
         running = false;
 
-        for (int i = 1; i < u.size() - 1; ++i) {
-            for (int j = 1; j < u.size() - 1; ++j) {
+        for (std::size_t i = 1; i < u.size() - 1; ++i) {
+            for (std::size_t j = 1; j < u.size() - 1; ++j) {
                 u[i][j] = (u    [i][j - 1] + u    [i - 1][j]
                          + u_old[i][j + 1] + u_old[i + 1][j]
                          + h * h * f(i * h, j * h)) / 4;
@@ -95,8 +95,8 @@ vector_t mehrgitter(vector_t     u, // Eingabevektor mit Rand
     std::cout << "Recursion done\n";
 
     // Interpolation
-    for (int i = 1; i < u.size() - 1; ++i)
-        for (int j = 1; j < u.size() - 1; ++j)
+    for (std::size_t i = 1; i < u.size() - 1; ++i)
+        for (std::size_t j = 1; j < u.size() - 1; ++j)
             vh[i][j] +=  0.25 * (v2h[i/2][j/2] + v2h[i/2][j/2 + 1] +
                                  v2h[i/2 + 1][j/2] + v2h[i/2 + 1][j/2 + 1]);
     std::cout << "Interpolation done\n";
