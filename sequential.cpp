@@ -111,10 +111,10 @@ int main(int argc, char **argv) {
     };
 
     // Feinheit "h"
-    const int    n = 8;
+    const int    n     = 8; // Grid Punkte, ohne Rand
     const int    n_max = 2;
-    const double h = 1.0 / n;
-    const double h_max = 1.0 / n_max;
+    const double h     = 1.0 / (n     + 1);
+    const double h_max = 1.0 / (n_max + 1);
 
     // Iterations- und Rekursionstiefen
     const int z1 = 100;
