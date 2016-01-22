@@ -92,8 +92,9 @@ vector_t mehrgitter(vector_t     u, // Eingabevektor mit Rand
     // Interpolation
     for (std::size_t i = 1; i < u.size() - 1; ++i)
         for (std::size_t j = 1; j < u.size() - 1; ++j)
-            vh[i][j] +=  0.25 * (v2h[i/2][j/2] + v2h[i/2][j/2 + 1] +
-                                 v2h[i/2 + 1][j/2] + v2h[i/2 + 1][j/2 + 1]);
+            vh[i][j] =  0.25 * (v2h[i/2][j/2] + v2h[i/2][j/2 + 1] +
+                                v2h[i/2 + 1][j/2] + v2h[i/2 + 1][j/2 + 1]);
+
     return gauss_seidel(vh, f, h, 0.00001, z2);
 }
 
@@ -110,8 +111,8 @@ int main(int argc, char **argv) {
     const double h_max = 1.0 / (n_max + 1);
 
     // Iterations- und Rekursionstiefen
-    const int z1 = 100;
-    const int z2 = 100;
+    const int z1 = 32;
+    const int z2 = 32;
     const int alpha = 1;
 
     // "Zufälliger" Startvektor "u_0", Rand inklusive
