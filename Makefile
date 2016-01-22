@@ -1,4 +1,4 @@
-CXXFLAGS := -std=c++11 -Wall
+CXXFLAGS := -std=c++11 -Wall -fopenmp
 
 .PHONY: all
 all: benchmark
