@@ -1,9 +1,9 @@
 CXXFLAGS := -std=c++11 -Wall
 
 .PHONY: all
-all: sequential
+all: benchmark
 	./$^
 
 .PHONY: clean
 clean:
-	rm -f sequential
+	rm -f benchmark
