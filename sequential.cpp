@@ -70,37 +70,30 @@ vector_t mehrgitter(vector_t     u, // Eingabevektor mit Rand
                     const double h_max, // Feinheit des gröbsten Gitters
                     const int    alpha) // Rekursionsverzweigungsbreite
 {
-    std::cout << "Starting with h=" << h << "\n";
     if (h >= h_max)
     {
         return gauss_seidel(u, f, h, 0.00001, 1000000);
     }
 
     auto vh = gauss_seidel(u, f, h, 0.00001, z1);
-    std::cout << z1 << " iterations of gauss-seidel done\n";
     const int n_new = (u.size() - 1) / 2;
     std::vector<std::vector<double>> v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
     // Restriktion
-    std::cout << "n_new=" << n_new << "\n";
     for (int i = 1; i <= n_new; ++i)
         for (int j = 1; j <= n_new; ++j)
             v2h[i][j] = 0.125 * (4*vh[2*i][2*j] + vh[2*i - 1][2*j] + vh[2*i + 1][2*j]
                                  + vh[2*i][2*j - 1] + vh[2+i][2*j + 1]);
-    std::cout << "Restriction done\n";
 
     // Rekursion
     for (int i=0; i<alpha; i++)
         v2h = mehrgitter(v2h, f, z1, z2, 2*h, h_max, alpha);
-    std::cout << "Recursion done\n";
 
     // Interpolation
     for (std::size_t i = 1; i < u.size() - 1; ++i)
         for (std::size_t j = 1; j < u.size() - 1; ++j)
             vh[i][j] +=  0.25 * (v2h[i/2][j/2] + v2h[i/2][j/2 + 1] +
                                  v2h[i/2 + 1][j/2] + v2h[i/2 + 1][j/2 + 1]);
-    std::cout << "Interpolation done\n";
-
     return gauss_seidel(vh, f, h, 0.00001, z2);
 }
 
