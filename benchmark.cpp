@@ -1,5 +1,6 @@
 #include "sequential.h"
 #include <time.h>
+#include <cmath>
 #include <iostream>
 
 double f(double x, double y) {
@@ -24,14 +25,44 @@ vector_t createStartVector(int n) {
     return u;
 }
 
+double computeMedianError(vector_t v1, vector_t v2) {
+    double sum = 0.0;
+    for (int i=0; i<v1.size(); i++) {
+        for (int j=0; j<v1.size(); j++) {
+            sum += std::abs(v1[i][j] - v2[i][j]);
+        }
+    }
+    return sum / v1.size() / v1.size();
+}
+
+double computeMaximumError(vector_t v1, vector_t v2) {
+    double max = 0.0;
+    for (int i=0; i<v1.size(); i++) {
+        for (int j=0; j<v1.size(); j++) {
+            max = std::max(max, std::abs(v1[i][j] - v2[i][j]));
+        }
+    }
+    return max;
+}
+
 void jakobi(int nMin, int nMax) {
     std::cout << "Starte Jakobi Benchmark\n";
 
     for (int n = nMin; n <= nMax; n*=2) {
         auto startVector = createStartVector(n);
-        auto analyticalResult = analytical(startVector, u);
+        auto anaResult = analytical(startVector, u);
         std::cout << "n=" << n << "\n";
+        double h = 1.0 / (n + 1);
 
-        jakobi(startVector, f, 
+        double time = getWallTime();
+        auto seqResult = jakobi(startVector, f, h, 0.00001);
+        double seqTime = getWallTime() - time;
+        double seqMedError = computeMedianError(anaResult, seqResult);
+        double seqMaxError = computeMaximumError(anaResult, seqResult);
+        std::cout << "Sequentiell: " << seqTime << "sek, Mittlerer Fehler: " << seqMedError << ", Maximaler Fehler: " << seqMaxError << "\n";
+
+        //TODO parallel
+
+        std::cout << "\n";
     }
 }
