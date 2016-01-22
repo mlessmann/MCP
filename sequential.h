@@ -21,7 +21,7 @@ vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
             for (std::size_t j = 1; j < u.size() - 1; ++j) {
                 u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
                          + u_old[i][j + 1] + u_old[i + 1][j]
-                         + h * h * f(i * h, j * h)) / 4;
+                         + h * h * f(i * h, j * h)) * 0.25;
 
                 // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
                 running = running || (std::abs(u[i][j] - u_old[i][j]) > change_threshold);
@@ -50,7 +50,7 @@ vector_t gauss_seidel(vector_t     u,                // Eingabevector, mit Rand
             for (std::size_t j = 1; j < u.size() - 1; ++j) {
                 u[i][j] = (u    [i][j - 1] + u    [i - 1][j]
                          + u_old[i][j + 1] + u_old[i + 1][j]
-                         + h * h * f(i * h, j * h)) / 4;
+                         + h * h * f(i * h, j * h)) * 0.25;
 
                 // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
                 running = running || (std::abs(u[i][j] - u_old[i][j]) > change_threshold);
