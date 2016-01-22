@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <iomanip>
-#include <iostream>
 #include <vector>
 
 typedef std::vector<std::vector<double>> vector_t;
