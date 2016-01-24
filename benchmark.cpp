@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <iostream>
 #include <iomanip>
+#include <functional>
 
 double f(double x, double y) {
     return 32 * (x * (1 - x) + y * (1 - y));
@@ -49,35 +50,87 @@ double computeMaximumError(vector_t v1, vector_t v2) {
     return max;
 }
 
-void jakobi(int nMin, int nMax) {
+bool vectorEquals(vector_t v1, vector_t v2) {
+    for (std::size_t i=0; i<v1.size(); i++) {
+        for (std::size_t j=0; j<v1.size(); j++) {
+            if (v1[i][j] != v2[i][j])
+                return false;
+        }
+    }
+    return true;
+}
+
+void executeBenchmark(int n, std::function<vector_t (vector_t, double)> seqFunc,
+                      std::function<vector_t (vector_t, double)> parFunc) {
+    auto startVector = createVector(n, [](double, double) {return 1.0;}); // Immer noch nicht zufällig
+    auto anaResult = createVector(n, u);
+    double h = 1.0 / (n + 1);
+
+    double time = getWallTime();
+    vector_t seqResult = seqFunc(startVector, h);
+    double seqTime = getWallTime() - time;
+
+    double seqMedError = computeMedianError(anaResult, seqResult);
+    double seqMaxError = computeMaximumError(anaResult, seqResult);
+    std::cout << "Sequentiell: " << seqTime
+              << "sek, Mittlerer Fehler: " << seqMedError
+              << ", Maximaler Fehler: " << seqMaxError << "\n";
+
+    time = getWallTime();
+    vector_t parResult = parFunc(startVector, h);
+    double parTime = getWallTime() - time;
+
+    if (!vectorEquals(seqResult, parResult))
+        std::cout << "Sequentielles und paralleles Ergebnis stimmen nicht überein!\n";
+    std::cout << "Parallel: " << parTime
+              << "sek, Speedup: " << seqTime / parTime << "\n\n";
+}
+
+void jakobiBenchmark(int nMin, int nMax) {
     std::cout << "Starte Jakobi Benchmark\n";
 
     for (int n = nMin; n <= nMax; n*=2) {
-        auto startVector = createVector(n, [](double, double) {return 1.0;}); // Immer noch nicht zufällig
-        auto anaResult = createVector(n, u);
-        double h = 1.0 / (n + 1);
+        auto seqFunc = [](vector_t v, double h){ return jakobi(v, f, h, 0.00001); };
+        auto parFunc = [](vector_t v, double h){ return jakobiParallel(v, f, h, 0.00001); };
         std::cout << "n=" << n << "\n";
+        executeBenchmark(n, seqFunc, parFunc);
+    }
+}
 
-        double time = getWallTime();
-        auto seqResult = jakobi(startVector, f, h, 0.00001);
-        double seqTime = getWallTime() - time;
-        double seqMedError = computeMedianError(anaResult, seqResult);
-        double seqMaxError = computeMaximumError(anaResult, seqResult);
-        std::cout << "Sequentiell: " << seqTime << "sek, Mittlerer Fehler: " << seqMedError << ", Maximaler Fehler: " << seqMaxError << "\n";
+void gaussSeidelBenchmark(int nMin, int nMax) {
+    std::cout << "Starte Gauss-Seidel Benchmark\n";
 
-        time = getWallTime();
-        auto parResult = jakobiParallel(startVector, f, h, 0.00001);
-        double parTime = getWallTime() - time;
-        double parMedError = computeMedianError(anaResult, parResult);
-        double parMaxError = computeMaximumError(anaResult, parResult);
-        std::cout << "Parallel: " << parTime << "sek, Mittlerer Fehler: " << parMedError <<  ", Maximaler Fehler: " << parMaxError << "\n";
+    for (int n = nMin; n <= nMax; n*=2) {
+        auto seqFunc = [](vector_t v, double h){ return gaussSeidel(v, f, h, 0.00001, 1000000); };
+        auto parFunc = [](vector_t v, double h){ return gaussSeidelParallel(v, f, h, 0.00001, 1000000); };
+        std::cout << "n=" << n << "\n";
+        executeBenchmark(n, seqFunc, parFunc);
+    }
+}
 
-        std::cout << "\n";
+void mehrgitterBenchmark(int nMin, int nMax) {
+    std::cout << "Starte Mehrgitter Benchmark\n";
+
+    for (int n = nMin; n <= nMax; n*=2) {
+        for (int alpha = 1; alpha <= 2; alpha++) {
+            for (int z1 = 8; z1 <= 256; z1*=2) {
+                for (int z2 = 8; z2 <= 256; z2*=2) {
+                    auto seqFunc = [=](vector_t v, double h){
+                        return mehrgitter(v, f, z1, z2, h, 4*h, alpha); };
+                    auto parFunc = [=](vector_t v, double h){
+                        return mehrgitterParallel(v, f, z1, z2, h, 4*h, alpha); };
+                    std::cout << "n=" << n << ", alpha=" << alpha << ", z1=" << z1 << ", z2=" << z2 << "\n";
+                    executeBenchmark(n, seqFunc, parFunc);
+                }
+            }
+        }
     }
 }
 
 int main(int argc, char** argv) {
     std::cout << std::fixed << std::setprecision(4);
 
-    jakobi(8, 256);
+    jakobiBenchmark(8, 128);
+    gaussSeidelBenchmark(8, 128);
+    mehrgitterBenchmark(8, 128);
 }

@@ -34,11 +34,11 @@ vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
 
 // Gauß-Seidel Verfahren
 template <typename Func>
-vector_t gauss_seidel(vector_t     u,                // Eingabevector, mit Rand
-                      Func         f,                // Eingabefunktion
-                      const double h,                // Feinheit des Gitters
-                      const double change_threshold, // Abbruchkriterium
-                      const int    max_iterations)   // Abbruchkriterium
+vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
+                     Func         f,                // Eingabefunktion
+                     const double h,                // Feinheit des Gitters
+                     const double change_threshold, // Abbruchkriterium
+                     const int    max_iterations)   // Abbruchkriterium
 {
     bool running = true;
     int iterations = 0;
@@ -72,10 +72,10 @@ vector_t mehrgitter(vector_t     u, // Eingabevektor mit Rand
 {
     if (h >= h_max)
     {
-        return gauss_seidel(u, f, h, 0.00001, 1000000);
+        return gaussSeidel(u, f, h, 0.00001, 1000000);
     }
 
-    auto vh = gauss_seidel(u, f, h, 0.00001, z1);
+    auto vh = gaussSeidel(u, f, h, 0.00001, z1);
     const int n_new = (u.size() - 1) / 2;
     std::vector<std::vector<double>> v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
@@ -95,5 +95,5 @@ vector_t mehrgitter(vector_t     u, // Eingabevektor mit Rand
             vh[i][j] =  0.25 * (v2h[i/2][j/2] + v2h[i/2][j/2 + 1] +
                                 v2h[i/2 + 1][j/2] + v2h[i/2 + 1][j/2 + 1]);
 
-    return gauss_seidel(vh, f, h, 0.00001, z2);
+    return gaussSeidel(vh, f, h, 0.00001, z2);
 }
