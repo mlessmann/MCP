@@ -1,5 +1,6 @@
 #pragma once
 
+//#include <cassert>
 #include <cmath>
 #include <vector>
 
@@ -30,7 +31,7 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
 
                 // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
                 if (std::abs(u[i][j] - u_old[i][j]) > change_threshold)
-                    running = true;
+                    running = true; // Unsynchronisiert. Sollte kein Problem (bzgl. Korrektheit) sein.
             }
         }
     }
@@ -48,34 +49,50 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                              const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
                              const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
-    auto u_old = u; // Kopie
+    iteration_count = 0;
+    // Vorlauf.
+    for (std::size_t step = 0; step < u.size() - 2; ++step) {
+        #pragma omp parallel for
+        for (std::size_t offset = 0; offset <= step; ++offset) {
+            const int i = 1 + step - offset;
+            const int j = 1 + offset;
 
-    // Bereite den Vektor vor, sodass eine Staffelung entsteht
-    // und alle Punkte parallel berechnet werden können.
-    for (iteration_count = 0; iteration_count + 2 <= u.size() - 1; ++iteration_count) {
-        std::swap(u, u_old);
-
-        #pragma omp parallel for schedule(static, iteration_count + 1), collapse(2)
-        for (int i = 1; i < iteration_count + 2; ++i) {
-            for (int j = 1; j < iteration_count + 2; ++j) {
-                u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
-                         + u_old[i][j + 1] + u_old[i + 1][j]
-                         + h * h * f(i * h, j * h)) * 0.25;
-            }
+            u[i][j] = (u[i][j - 1] + u[i - 1][j]
+                     + u[i][j + 1] + u[i + 1][j]
+                     + h * h * f(i * h, j * h)) * 0.25;
         }
     }
 
-    // Von hier an ist der Algorithmus äquivalent zu Jakobi.
-    int iter_count;
-    u = jakobiParallel(u, f, h, iter_count, change_threshold, max_iterations - iteration_count);
+    // Die erste halbe Iteration ist fast vollzogen. Mit der Diagonalen geht
+    // es weiter und ab jetzt mit Anzahl der Threads = "u.size() ohne Rand".
+    bool running = true;
+    while (running && iteration_count++ < max_iterations) {
+        running = false;
 
-    // Der Vektor könnte hier noch nachbereitet werden, sodass das Ergebnis
-    // einem gleich viele Iterationen durchlaufenden, sequenziellen Gauß-Seidel
-    // entspricht. Die Abbruchbedingungen können dann allerdings als verpasst,
-    // aber erfüllt betrachtet werden. Vielleicht lohnt sich die wenig
-    // zeitintensive Nachbereitung im Verhältnis zur Quallität des Ergebnisses.
+        for (std::size_t step = 0; step < u.size() - 2; ++step) {
+            #pragma omp parallel for
+            for (std::size_t offset = 0; offset < u.size() - 2; ++offset) {
+                const int i = 1 + ((step - offset + u.size() - 2) % (u.size() - 2));
+                const int j = 1 + offset;
 
-    iteration_count += iter_count;
+                /* Debug:
+                assert(i >= 1 && i <= u.size() - 2);
+                assert(j >= 1 && j <= u.size() - 2);
+                */
+
+                auto u_old = u[i][j];
+                u[i][j] = (u[i][j - 1] + u[i - 1][j]
+                         + u[i][j + 1] + u[i + 1][j]
+                         + h * h * f(i * h, j * h)) * 0.25;
+
+                // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
+                if (std::abs(u[i][j] - u_old) > change_threshold)
+                    running = true; // Unsynchronisiert. Sollte kein Problem (bzgl. Korrektheit) sein.
+            }
+        }
+    }
+    --iteration_count; // Fix count
+
     return u;
 }
 
