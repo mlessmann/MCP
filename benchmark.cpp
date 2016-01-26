@@ -91,6 +91,7 @@ void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     double parTime = getWallTime() - time;
 
     if (!vectorEquals(seqResult, parResult))
+        // TODO: Toleranz einbauen? Gauß-Seidel Parallel ist nicht exakt identisch mit GS Sequenziell.
         //throw std::logic_error("Sequentielles und paralleles Ergebnis stimmen nicht überein!\n");
         std::cout << "Sequentielles und paralleles Ergebnis stimmen nicht überein!\n";
     std::cout << "Parallel: " << parTime
@@ -165,5 +166,5 @@ int main(int argc, char** argv) {
 
     jakobiBenchmark(64, 512);
     gaussSeidelBenchmark(64, 512);
-    //mehrgitterBenchmark(8, 128);
+    //mehrgitterBenchmark(128, 256); // Zu viele Ausgaben, daher temporär auskommentiert. (TODO)
 }

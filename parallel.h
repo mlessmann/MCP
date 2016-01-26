@@ -1,6 +1,5 @@
 #pragma once
 
-//#include <cassert>
 #include <cmath>
 #include <vector>
 
@@ -75,11 +74,6 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                 const int i = 1 + ((step - offset + u.size() - 2) % (u.size() - 2));
                 const int j = 1 + offset;
 
-                /* Debug:
-                assert(i >= 1 && i <= u.size() - 2);
-                assert(j >= 1 && j <= u.size() - 2);
-                */
-
                 auto u_old = u[i][j];
                 u[i][j] = (u[i][j - 1] + u[i - 1][j]
                          + u[i][j + 1] + u[i + 1][j]
@@ -93,6 +87,9 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
     }
     --iteration_count; // Fix count
 
+    // Das Ergebnis ist nicht identisch mit der sequenziellen Version, da immer
+    // zwei Iterationen parallel auf einem Vektor durchgeführt werden. Der
+    // Vektor hat demnach nie den Zustand wie nach genau einer Iteration.
     return u;
 }
 
