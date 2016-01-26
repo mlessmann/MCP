@@ -14,13 +14,14 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
                         const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
                         const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
+    auto u_old = u; // Kopie
     bool running = true;
     iteration_count = 0;
     while (running && iteration_count++ < max_iterations) {
-        auto u_old = u; // Kopie
+        std::swap(u, u_old);
         running = false;
 
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(static, u.size() - 2), collapse(2)
         for (std::size_t i = 1; i < u.size() - 1; ++i) {
             for (std::size_t j = 1; j < u.size() - 1; ++j) {
                 u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
@@ -29,11 +30,11 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
 
                 // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
                 if (std::abs(u[i][j] - u_old[i][j]) > change_threshold)
-                    running = true;
+                    running = true; // Unsynchronisiert. Sollte kein Problem (bzgl. Korrektheit) sein.
             }
         }
     }
-    --iteration_count;
+    --iteration_count; // Fix count
 
     return u;
 }
@@ -47,25 +48,48 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                              const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
                              const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
-    bool running = true;
     iteration_count = 0;
+    // Vorlauf.
+    for (std::size_t step = 0; step < u.size() - 2; ++step) {
+        #pragma omp parallel for
+        for (std::size_t offset = 0; offset <= step; ++offset) {
+            const int i = 1 + step - offset;
+            const int j = 1 + offset;
+
+            u[i][j] = (u[i][j - 1] + u[i - 1][j]
+                     + u[i][j + 1] + u[i + 1][j]
+                     + h * h * f(i * h, j * h)) * 0.25;
+        }
+    }
+
+    // Die erste halbe Iteration ist fast vollzogen. Mit der Diagonalen geht
+    // es weiter und ab jetzt mit Anzahl der Threads = "u.size() ohne Rand".
+    bool running = true;
     while (running && iteration_count++ < max_iterations) {
-        auto u_old = u; // Kopie
         running = false;
 
-        for (std::size_t i = 1; i < u.size() - 1; ++i) {
-            for (std::size_t j = 1; j < u.size() - 1; ++j) {
-                u[i][j] = (u    [i][j - 1] + u    [i - 1][j]
-                         + u_old[i][j + 1] + u_old[i + 1][j]
+        for (std::size_t step = 0; step < u.size() - 2; ++step) {
+            #pragma omp parallel for
+            for (std::size_t offset = 0; offset < u.size() - 2; ++offset) {
+                const int i = 1 + ((step - offset + u.size() - 2) % (u.size() - 2));
+                const int j = 1 + offset;
+
+                auto u_old = u[i][j];
+                u[i][j] = (u[i][j - 1] + u[i - 1][j]
+                         + u[i][j + 1] + u[i + 1][j]
                          + h * h * f(i * h, j * h)) * 0.25;
 
                 // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
-                running = running || (std::abs(u[i][j] - u_old[i][j]) > change_threshold);
+                if (std::abs(u[i][j] - u_old) > change_threshold)
+                    running = true; // Unsynchronisiert. Sollte kein Problem (bzgl. Korrektheit) sein.
             }
         }
     }
-    --iteration_count;
+    --iteration_count; // Fix count
 
+    // Das Ergebnis ist nicht identisch mit der sequenziellen Version, da immer
+    // zwei Iterationen parallel auf einem Vektor durchgeführt werden. Der
+    // Vektor hat demnach nie den Zustand wie nach genau einer Iteration.
     return u;
 }
 
