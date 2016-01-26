@@ -31,6 +31,7 @@ vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
             }
         }
     }
+    --iteration_count;
 
     return u;
 }
@@ -61,6 +62,7 @@ vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
             }
         }
     }
+    --iteration_count;
 
     return u;
 }

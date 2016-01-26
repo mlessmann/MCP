@@ -10,10 +10,13 @@ template <typename Func>
 vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Rand
                         Func         f,                // Eingabefunktion
                         const double h,                // Feinheit des Gitters
-                        const double change_threshold) // Abbruchkriterium
+                        int          &iteration_count, // Out-Variable (profiling)
+                        const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
+                        const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
     bool running = true;
-    while (running) {
+    iteration_count = 0;
+    while (running && iteration_count++ < max_iterations) {
         auto u_old = u; // Kopie
         running = false;
 
@@ -30,6 +33,7 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
             }
         }
     }
+    --iteration_count;
 
     return u;
 }
@@ -39,12 +43,13 @@ template <typename Func>
 vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mit Rand
                              Func         f,                // Eingabefunktion
                              const double h,                // Feinheit des Gitters
-                             const double change_threshold, // Abbruchkriterium
-                             const int    max_iterations)   // Abbruchkriterium
+                             int          &iteration_count, // Out-Variable (profiling)
+                             const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
+                             const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
     bool running = true;
-    int iterations = 0;
-    while (running && iterations++ < max_iterations) {
+    iteration_count = 0;
+    while (running && iteration_count++ < max_iterations) {
         auto u_old = u; // Kopie
         running = false;
 
@@ -59,27 +64,33 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
             }
         }
     }
+    --iteration_count;
 
     return u;
 }
 
 template <typename Func>
-vector_t mehrgitterParallel(vector_t     u, // Eingabevektor mit Rand
-                            Func         f, // Eingabefunktion
-                            const int    z1, // Iterationen Phase 1
-                            const int    z2, // Iterationen Phase 2
-                            const double h, // Feinheit des Eingabegitters
-                            const double h_max, // Feinheit des gröbsten Gitters
-                            const int    alpha) // Rekursionsverzweigungsbreite
+vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
+                            Func             f,  // Eingabefunktion
+                            const int        z1, // Iterationen Phase 1
+                            const int        z2, // Iterationen Phase 2
+                            const double     h,  // Feinheit des Eingabegitters
+                            const double     h_max, // Feinheit des gröbsten Gitters
+                            const int        alpha, // Rekursionsverzweigungsbreite
+                            std::vector<int> &iteration_count, // Out-Variable (profiling)
+                            const double     change_threshold, // Abbruch, wenn Änderung kleiner Wert
+                            const int        max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
-    if (h >= h_max)
-    {
-        return gaussSeidelParallel(u, f, h, 0.00001, 1000000);
+    if (h >= h_max) {
+        iteration_count.push_back(0);
+        return gaussSeidelParallel(u, f, h, iteration_count.back(),
+                                   change_threshold, max_iterations);
     }
 
-    auto vh = gaussSeidelParallel(u, f, h, 0.00001, z1);
+    iteration_count.push_back(0);
+    auto vh = gaussSeidelParallel(u, f, h, iteration_count.back(), change_threshold, z1);
     const int n_new = (u.size() - 1) / 2;
-    std::vector<std::vector<double>> v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
+    vector_t v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
     // Restriktion
     for (int i = 1; i <= n_new; ++i)
@@ -88,8 +99,9 @@ vector_t mehrgitterParallel(vector_t     u, // Eingabevektor mit Rand
                                  + vh[2*i][2*j - 1] + vh[2+i][2*j + 1]);
 
     // Rekursion
-    for (int i=0; i<alpha; i++)
-        v2h = mehrgitter(v2h, f, z1, z2, 2*h, h_max, alpha);
+    for (int i=0; i<alpha; ++i)
+        v2h = mehrgitterParallel(v2h, f, z1, z2, 2*h, h_max, alpha,
+                                 iteration_count, change_threshold, max_iterations);
 
     // Interpolation
     for (std::size_t i = 1; i < u.size() - 1; ++i)
@@ -97,5 +109,6 @@ vector_t mehrgitterParallel(vector_t     u, // Eingabevektor mit Rand
             vh[i][j] =  0.25 * (v2h[i/2][j/2] + v2h[i/2][j/2 + 1] +
                                 v2h[i/2 + 1][j/2] + v2h[i/2 + 1][j/2 + 1]);
 
-    return gaussSeidelParallel(vh, f, h, 0.00001, z2);
+    iteration_count.push_back(0);
+    return gaussSeidelParallel(vh, f, h, iteration_count.back(), change_threshold, z2);
 }
