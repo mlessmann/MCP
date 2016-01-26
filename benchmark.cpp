@@ -7,6 +7,10 @@
 #include <functional>
 #include <stdexcept>
 
+// Standardwerte für Abbruchkriterien
+static const double def_change_threshold = 1.0 / 1000;
+static const int    def_max_iterations   = 1000;
+
 // Eingabefunktion
 double f(double x, double y) {
     return 32 * (x * (1 - x) + y * (1 - y));
@@ -97,9 +101,9 @@ void jakobiBenchmark(int nMin, int nMax) {
 
     int iter_count_seq, iter_count_par;
     auto seqFunc = [&](const vector_t &u, const double h) {
-        return jakobi(u, f, h, iter_count_seq, 0.00001, 100); };
+        return jakobi(u, f, h, iter_count_seq, def_change_threshold, def_max_iterations); };
     auto parFunc = [&](const vector_t &u, const double h) {
-        return jakobiParallel(u, f, h, iter_count_par, 0.00001, 100); };
+        return jakobiParallel(u, f, h, iter_count_par, def_change_threshold, def_max_iterations); };
 
     for (int n = nMin; n <= nMax; n*=2) {
         std::cout << "n=" << n << "\n";
@@ -113,9 +117,9 @@ void gaussSeidelBenchmark(int nMin, int nMax) {
 
     int iter_count_seq, iter_count_par;
     auto seqFunc = [&](const vector_t &u, const double h) {
-        return gaussSeidel(u, f, h, iter_count_seq, 0.00001, 100); };
+        return gaussSeidel(u, f, h, iter_count_seq, def_change_threshold, def_max_iterations); };
     auto parFunc = [&](const vector_t &u, const double h) {
-        return gaussSeidelParallel(u, f, h, iter_count_par, 0.00001, 100); };
+        return gaussSeidelParallel(u, f, h, iter_count_par, def_change_threshold, def_max_iterations); };
 
     for (int n = nMin; n <= nMax; n*=2) {
         std::cout << "n=" << n << "\n";
@@ -127,6 +131,7 @@ void gaussSeidelBenchmark(int nMin, int nMax) {
 void mehrgitterBenchmark(int nMin, int nMax) {
     std::cout << "Starte Mehrgitter Benchmark\n";
 
+    // Helfer: Liste schick darstellen.
     auto _s = [](const std::vector<int> &l) {
         std::string res = "[";
         if (l.size() > 0)
@@ -142,9 +147,9 @@ void mehrgitterBenchmark(int nMin, int nMax) {
                 for (int z2 = 8; z2 <= 256; z2*=2) {
                     std::vector<int> iter_count_seq, iter_count_par;
                     auto seqFunc = [&](const vector_t &u, const double h) {
-                        return mehrgitter(u, f, z1, z2, h, 4*h, alpha, iter_count_seq, 0.00001, 100); };
+                        return mehrgitter(u, f, z1, z2, h, 4*h, alpha, iter_count_seq, def_change_threshold, def_max_iterations); };
                     auto parFunc = [&](const vector_t &u, const double h) {
-                        return mehrgitterParallel(u, f, z1, z2, h, 4*h, alpha, iter_count_par, 0.00001, 100); };
+                        return mehrgitterParallel(u, f, z1, z2, h, 4*h, alpha, iter_count_par, def_change_threshold, def_max_iterations); };
                     std::cout << "n=" << n << ", alpha=" << alpha << ", z1=" << z1 << ", z2=" << z2 << "\n";
                     executeBenchmark(n, seqFunc, parFunc);
                     std::cout << "Iterationen: Seq=" << _s(iter_count_seq) << ", Par=" << _s(iter_count_par) << "\n\n";
