@@ -14,13 +14,14 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
                         const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
                         const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
+    auto u_old = u; // Kopie
     bool running = true;
     iteration_count = 0;
     while (running && iteration_count++ < max_iterations) {
-        auto u_old = u; // Kopie
+        std::swap(u, u_old);
         running = false;
 
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(static, u.size() - 2), collapse(2)
         for (std::size_t i = 1; i < u.size() - 1; ++i) {
             for (std::size_t j = 1; j < u.size() - 1; ++j) {
                 u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
@@ -33,7 +34,7 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
             }
         }
     }
-    --iteration_count;
+    --iteration_count; // Fix count
 
     return u;
 }
@@ -47,25 +48,34 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                              const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
                              const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
-    bool running = true;
-    iteration_count = 0;
-    while (running && iteration_count++ < max_iterations) {
-        auto u_old = u; // Kopie
-        running = false;
+    auto u_old = u; // Kopie
 
-        for (std::size_t i = 1; i < u.size() - 1; ++i) {
-            for (std::size_t j = 1; j < u.size() - 1; ++j) {
-                u[i][j] = (u    [i][j - 1] + u    [i - 1][j]
+    // Bereite den Vektor vor, sodass eine Staffelung entsteht
+    // und alle Punkte parallel berechnet werden können.
+    for (iteration_count = 0; iteration_count + 2 <= u.size() - 1; ++iteration_count) {
+        std::swap(u, u_old);
+
+        #pragma omp parallel for schedule(static, iteration_count + 1), collapse(2)
+        for (int i = 1; i < iteration_count + 2; ++i) {
+            for (int j = 1; j < iteration_count + 2; ++j) {
+                u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
                          + u_old[i][j + 1] + u_old[i + 1][j]
                          + h * h * f(i * h, j * h)) * 0.25;
-
-                // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
-                running = running || (std::abs(u[i][j] - u_old[i][j]) > change_threshold);
             }
         }
     }
-    --iteration_count;
 
+    // Von hier an ist der Algorithmus äquivalent zu Jakobi.
+    int iter_count;
+    u = jakobiParallel(u, f, h, iter_count, change_threshold, max_iterations - iteration_count);
+
+    // Der Vektor könnte hier noch nachbereitet werden, sodass das Ergebnis
+    // einem gleich viele Iterationen durchlaufenden, sequenziellen Gauß-Seidel
+    // entspricht. Die Abbruchbedingungen können dann allerdings als verpasst,
+    // aber erfüllt betrachtet werden. Vielleicht lohnt sich die wenig
+    // zeitintensive Nachbereitung im Verhältnis zur Quallität des Ergebnisses.
+
+    iteration_count += iter_count;
     return u;
 }
 
