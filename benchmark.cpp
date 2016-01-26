@@ -89,48 +89,65 @@ void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     if (!vectorEquals(seqResult, parResult))
         throw std::logic_error("Sequentielles und paralleles Ergebnis stimmen nicht überein!\n");
     std::cout << "Parallel: " << parTime
-              << "sek, Speedup: " << seqTime / parTime << "\n\n";
+              << "sek, Speedup: " << seqTime / parTime << "\n";
 }
 
 void jakobiBenchmark(int nMin, int nMax) {
     std::cout << "Starte Jakobi Benchmark\n";
 
-    using namespace std::placeholders;
-    auto seqFunc = std::bind(jakobi,        _1, f, _2, 0.00001); // Erzeugt Funktionswrapper, wobei
-    auto parFunc = std::bind(jakobiParallel,_1, f, _2, 0.00001); // _1 und _2 die neuen Parameter sind.
+    int iter_count_seq, iter_count_par;
+    auto seqFunc = [&](const vector_t &u, const double h) {
+        return jakobi(u, f, h, iter_count_seq, 0.00001, 100); };
+    auto parFunc = [&](const vector_t &u, const double h) {
+        return jakobiParallel(u, f, h, iter_count_par, 0.00001, 100); };
 
     for (int n = nMin; n <= nMax; n*=2) {
         std::cout << "n=" << n << "\n";
         executeBenchmark(n, seqFunc, parFunc);
+        std::cout << "Iterationen: Seq=" << iter_count_seq << ", Par=" << iter_count_par << "\n\n";
     }
 }
 
 void gaussSeidelBenchmark(int nMin, int nMax) {
     std::cout << "Starte Gauss-Seidel Benchmark\n";
 
-    using namespace std::placeholders;
-    auto seqFunc = std::bind(gaussSeidel,         _1, f, _2, 0.00001, 100);
-    auto parFunc = std::bind(gaussSeidelParallel, _1, f, _2, 0.00001, 100);
+    int iter_count_seq, iter_count_par;
+    auto seqFunc = [&](const vector_t &u, const double h) {
+        return gaussSeidel(u, f, h, iter_count_seq, 0.00001, 100); };
+    auto parFunc = [&](const vector_t &u, const double h) {
+        return gaussSeidelParallel(u, f, h, iter_count_par, 0.00001, 100); };
 
     for (int n = nMin; n <= nMax; n*=2) {
         std::cout << "n=" << n << "\n";
         executeBenchmark(n, seqFunc, parFunc);
+        std::cout << "Iterationen: Seq=" << iter_count_seq << ", Par=" << iter_count_par << "\n\n";
     }
 }
 
 void mehrgitterBenchmark(int nMin, int nMax) {
     std::cout << "Starte Mehrgitter Benchmark\n";
 
+    auto _s = [](const std::vector<int> &l) {
+        std::string res = "[";
+        if (l.size() > 0)
+            res += std::to_string(l[0]);
+        for (std::size_t i = 1; i < l.size(); ++i)
+            res += ", " + std::to_string(l[i]);
+        return res + "]";
+    };
+
     for (int n = nMin; n <= nMax; n*=2) {
         for (int alpha = 1; alpha <= 2; alpha++) {
             for (int z1 = 8; z1 <= 256; z1*=2) {
                 for (int z2 = 8; z2 <= 256; z2*=2) {
-                    auto seqFunc = [=](vector_t v, double h){
-                        return mehrgitter(v, f, z1, z2, h, 4*h, alpha); };
-                    auto parFunc = [=](vector_t v, double h){
-                        return mehrgitterParallel(v, f, z1, z2, h, 4*h, alpha); };
+                    std::vector<int> iter_count_seq, iter_count_par;
+                    auto seqFunc = [&](const vector_t &u, const double h) {
+                        return mehrgitter(u, f, z1, z2, h, 4*h, alpha, iter_count_seq, 0.00001, 100); };
+                    auto parFunc = [&](const vector_t &u, const double h) {
+                        return mehrgitterParallel(u, f, z1, z2, h, 4*h, alpha, iter_count_par, 0.00001, 100); };
                     std::cout << "n=" << n << ", alpha=" << alpha << ", z1=" << z1 << ", z2=" << z2 << "\n";
                     executeBenchmark(n, seqFunc, parFunc);
+                    std::cout << "Iterationen: Seq=" << _s(iter_count_seq) << ", Par=" << _s(iter_count_par) << "\n\n";
                 }
             }
         }
