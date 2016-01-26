@@ -5,11 +5,14 @@
 #include <iostream>
 #include <iomanip>
 #include <functional>
+#include <stdexcept>
 
+// Eingabefunktion
 double f(double x, double y) {
     return 32 * (x * (1 - x) + y * (1 - y));
 }
 
+// Analytische Lösung
 double u(double x, double y) {
     return 16 * x * (1 - x) * y * (1 - y);
 };
@@ -20,6 +23,8 @@ double getWallTime() {
     return (double)time.tv_sec + (double)time.tv_usec * .000001;
 }
 
+// Erzeugt einen "Vector", wie für Jakobi, usw. benötigt.
+// Der Vector wird mit der übergebenen Funktion f initialisiert.
 template <typename Func>
 vector_t createVector(int n, Func f) {
     const double h = 1.0 / (n + 1);
@@ -30,7 +35,8 @@ vector_t createVector(int n, Func f) {
     return u;
 }
 
-double computeMedianError(vector_t v1, vector_t v2) {
+// FK: Das Ding ist nicht das, was ich unter Median verstehe. TODO: Nochmal checken.
+double computeMedianError(const vector_t &v1, const vector_t &v2) {
     double sum = 0.0;
     for (std::size_t i=0; i<v1.size(); i++) {
         for (std::size_t j=0; j<v1.size(); j++) {
@@ -40,7 +46,7 @@ double computeMedianError(vector_t v1, vector_t v2) {
     return sum / v1.size() / v1.size();
 }
 
-double computeMaximumError(vector_t v1, vector_t v2) {
+double computeMaximumError(const vector_t &v1, const vector_t &v2) {
     double max = 0.0;
     for (std::size_t i=0; i<v1.size(); i++) {
         for (std::size_t j=0; j<v1.size(); j++) {
@@ -50,7 +56,7 @@ double computeMaximumError(vector_t v1, vector_t v2) {
     return max;
 }
 
-bool vectorEquals(vector_t v1, vector_t v2) {
+bool vectorEquals(const vector_t &v1, const vector_t &v2) {
     for (std::size_t i=0; i<v1.size(); i++) {
         for (std::size_t j=0; j<v1.size(); j++) {
             if (v1[i][j] != v2[i][j])
@@ -60,8 +66,8 @@ bool vectorEquals(vector_t v1, vector_t v2) {
     return true;
 }
 
-void executeBenchmark(int n, std::function<vector_t (vector_t, double)> seqFunc,
-                      std::function<vector_t (vector_t, double)> parFunc) {
+template <typename SeqFunc, typename ParFunc>
+void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     auto startVector = createVector(n, [](double, double) {return 1.0;}); // Immer noch nicht zufällig
     auto anaResult = createVector(n, u);
     double h = 1.0 / (n + 1);
@@ -81,7 +87,7 @@ void executeBenchmark(int n, std::function<vector_t (vector_t, double)> seqFunc,
     double parTime = getWallTime() - time;
 
     if (!vectorEquals(seqResult, parResult))
-        std::cout << "Sequentielles und paralleles Ergebnis stimmen nicht überein!\n";
+        throw std::logic_error("Sequentielles und paralleles Ergebnis stimmen nicht überein!\n");
     std::cout << "Parallel: " << parTime
               << "sek, Speedup: " << seqTime / parTime << "\n\n";
 }
@@ -89,9 +95,11 @@ void executeBenchmark(int n, std::function<vector_t (vector_t, double)> seqFunc,
 void jakobiBenchmark(int nMin, int nMax) {
     std::cout << "Starte Jakobi Benchmark\n";
 
+    using namespace std::placeholders;
+    auto seqFunc = std::bind(jakobi,        _1, f, _2, 0.00001); // Erzeugt Funktionswrapper, wobei
+    auto parFunc = std::bind(jakobiParallel,_1, f, _2, 0.00001); // _1 und _2 die neuen Parameter sind.
+
     for (int n = nMin; n <= nMax; n*=2) {
-        auto seqFunc = [](vector_t v, double h){ return jakobi(v, f, h, 0.00001); };
-        auto parFunc = [](vector_t v, double h){ return jakobiParallel(v, f, h, 0.00001); };
         std::cout << "n=" << n << "\n";
         executeBenchmark(n, seqFunc, parFunc);
     }
@@ -100,9 +108,11 @@ void jakobiBenchmark(int nMin, int nMax) {
 void gaussSeidelBenchmark(int nMin, int nMax) {
     std::cout << "Starte Gauss-Seidel Benchmark\n";
 
+    using namespace std::placeholders;
+    auto seqFunc = std::bind(gaussSeidel,         _1, f, _2, 0.00001, 100);
+    auto parFunc = std::bind(gaussSeidelParallel, _1, f, _2, 0.00001, 100);
+
     for (int n = nMin; n <= nMax; n*=2) {
-        auto seqFunc = [](vector_t v, double h){ return gaussSeidel(v, f, h, 0.00001, 1000000); };
-        auto parFunc = [](vector_t v, double h){ return gaussSeidelParallel(v, f, h, 0.00001, 1000000); };
         std::cout << "n=" << n << "\n";
         executeBenchmark(n, seqFunc, parFunc);
     }
