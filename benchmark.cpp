@@ -8,8 +8,8 @@
 #include <stdexcept>
 
 // Standardwerte für Abbruchkriterien
-static const double def_change_threshold = 1.0 / 10000;
-static const int    def_max_iterations   = 10000;
+static const double def_change_threshold = 1.0 / 100000;
+static const int    def_max_iterations   = 100000;
 
 // Eingabefunktion
 double f(double x, double y) {
