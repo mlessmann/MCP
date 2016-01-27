@@ -123,12 +123,12 @@ void mehrgitterBenchmark() {
     std::cout << "Starte Mehrgitter Benchmark\n";
 
     // Helfer: Liste schick darstellen.
-    auto _s = [](const std::vector<int> &l) {
+    auto _s = [](const std::vector<std::pair<std::string, int>> &l) {
         std::string res = "[";
         if (l.size() > 0)
-            res += std::to_string(l[0]);
+            res += l[0].first + ":" + std::to_string(l[0].second);
         for (std::size_t i = 1; i < l.size(); ++i)
-            res += ", " + std::to_string(l[i]);
+            res += ", " + l[i].first + ":" + std::to_string(l[i].second);
         return res + "]";
     };
 
@@ -136,7 +136,7 @@ void mehrgitterBenchmark() {
         for (int alpha = 1; alpha <= 2; alpha++) {
             for (int z1 = 8; z1 <= 256; z1*=2) {
                 for (int z2 = 8; z2 <= 256; z2*=2) {
-                    std::vector<int> iter_count_seq, iter_count_par;
+                    std::vector<std::pair<std::string, int>> iter_count_seq, iter_count_par;
                     auto seqFunc = [&](const vector_t &u, const double h) {
                         return mehrgitter(u, f, z1, z2, h, 4*h, alpha, iter_count_seq, def_change_threshold, def_max_iterations); };
                     auto parFunc = [&](const vector_t &u, const double h) {
@@ -153,7 +153,7 @@ void mehrgitterBenchmark() {
 int main(int argc, char** argv) {
     std::cout << std::fixed << std::setprecision(4);
 
-    jakobiBenchmark();
-    gaussSeidelBenchmark();
-    //mehrgitterBenchmark(); // Zu viele Ausgaben, daher temporär auskommentiert. (TODO)
+    //jakobiBenchmark();
+    //gaussSeidelBenchmark();
+    mehrgitterBenchmark(); // Zu viele Ausgaben, daher temporär auskommentiert. (TODO)
 }

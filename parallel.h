@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <vector>
+#include <string>
 
 typedef std::vector<std::vector<double>> vector_t;
 
@@ -19,7 +20,8 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
     iteration_count = 0;
     const int size = u.size() - 1;
 
-    while (running && iteration_count++ < max_iterations) {
+    while (running && iteration_count < max_iterations) {
+        iteration_count++;
         std::swap(u, u_old);
         running = false;
 
@@ -35,7 +37,6 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
             }
         }
     }
-    --iteration_count; // Fix count
 
     return u;
 }
@@ -67,7 +68,8 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
     // Die erste halbe Iteration ist fast vollzogen. Mit der Diagonalen geht
     // es weiter und ab jetzt mit Anzahl der Threads = "u.size() ohne Rand".
     bool running = true;
-    while (running && iteration_count++ < max_iterations) {
+    while (running && iteration_count < max_iterations) {
+        iteration_count++;
         running = false;
 
         for (std::size_t step = 0; step < size; ++step) {
@@ -86,7 +88,6 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
             }
         }
     }
-    --iteration_count; // Fix count
 
     // Das Ergebnis ist nicht identisch mit der sequenziellen Version, da immer
     // zwei Iterationen parallel auf einem Vektor durchgeführt werden. Der
@@ -102,18 +103,18 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
                             const double     h,  // Feinheit des Eingabegitters
                             const double     h_max, // Feinheit des gröbsten Gitters
                             const int        alpha, // Rekursionsverzweigungsbreite
-                            std::vector<int> &iteration_count, // Out-Variable (profiling)
+                            std::vector<std::pair<std::string, int>> &iteration_count, // Out-Variable (profiling)
                             const double     change_threshold, // Abbruch, wenn Änderung kleiner Wert
                             const int        max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
     if (h >= h_max) {
-        iteration_count.push_back(0);
-        return gaussSeidelParallel(u, f, h, iteration_count.back(),
+        iteration_count.emplace_back("Main", 0);
+        return gaussSeidelParallel(u, f, h, iteration_count.back().second,
                                    change_threshold, max_iterations);
     }
 
-    iteration_count.push_back(0);
-    auto vh = gaussSeidelParallel(u, f, h, iteration_count.back(), change_threshold, z1);
+    iteration_count.emplace_back("Down", 0);
+    auto vh = gaussSeidelParallel(u, f, h, iteration_count.back().second, change_threshold, z1);
     const int n_new = (u.size() - 1) / 2;
     vector_t v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
@@ -126,8 +127,9 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
 
     // Rekursion
     for (int i=0; i<alpha; ++i)
-        v2h = mehrgitterParallel(v2h, f, z1, z2, 2*h, h_max, alpha,
-                                 iteration_count, change_threshold, max_iterations);
+        if (i == 0 || 2*h < h_max) // at lowest level only recurse once
+            v2h = mehrgitterParallel(v2h, f, z1, z2, 2*h, h_max, alpha,
+                                     iteration_count, change_threshold, max_iterations);
 
     // Interpolation
     #pragma omp parallel for schedule(static) collapse(2)
@@ -136,6 +138,6 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
             vh[i][j] =  0.25 * (v2h[i/2][j/2] + v2h[i/2][j/2 + 1] +
                                 v2h[i/2 + 1][j/2] + v2h[i/2 + 1][j/2 + 1]);
 
-    iteration_count.push_back(0);
-    return gaussSeidelParallel(vh, f, h, iteration_count.back(), change_threshold, z2);
+    iteration_count.emplace_back("Up", 0);
+    return gaussSeidelParallel(vh, f, h, iteration_count.back().second, change_threshold, z2);
 }
