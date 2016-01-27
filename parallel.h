@@ -50,8 +50,9 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                              const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
     iteration_count = 0;
+    const int size = u.size() - 2;
     // Vorlauf.
-    for (std::size_t step = 0; step < u.size() - 2; ++step) {
+    for (std::size_t step = 0; step < size; ++step) {
         #pragma omp parallel for
         for (std::size_t offset = 0; offset <= step; ++offset) {
             const int i = 1 + step - offset;
@@ -69,10 +70,10 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
     while (running && iteration_count++ < max_iterations) {
         running = false;
 
-        for (std::size_t step = 0; step < u.size() - 2; ++step) {
+        for (std::size_t step = 0; step < size; ++step) {
             #pragma omp parallel for reduction(||:running)
-            for (std::size_t offset = 0; offset < u.size() - 2; ++offset) {
-                const int i = 1 + ((step - offset + u.size() - 2) % (u.size() - 2));
+            for (std::size_t offset = 0; offset < size; ++offset) {
+                const int i = 1 + ((step - offset + size) % size);
                 const int j = 1 + offset;
 
                 auto u_old = u[i][j];
