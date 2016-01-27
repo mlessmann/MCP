@@ -1,6 +1,8 @@
 #pragma once
 
+#include "barrier.h"
 #include <cmath>
+#include <thread>
 #include <vector>
 
 typedef std::vector<std::vector<double>> vector_t;
@@ -85,6 +87,75 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
             }
         }
     }
+    --iteration_count; // Fix count
+
+    // Das Ergebnis ist nicht identisch mit der sequenziellen Version, da immer
+    // zwei Iterationen parallel auf einem Vektor durchgeführt werden. Der
+    // Vektor hat demnach nie den Zustand wie nach genau einer Iteration.
+    return u;
+}
+
+// Gauß-Seidel Verfahren (C++11)
+template <typename Func>
+vector_t gaussSeidelParallelCpp11(vector_t     u,                // Eingabevector, mit Rand
+                                  Func         f,                // Eingabefunktion
+                                  const double h,                // Feinheit des Gitters
+                                  int          &iteration_count, // Out-Variable (profiling)
+                                  const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
+                                  const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
+{
+    // Vorlauf. Zunächst ungeachtet sequenziell.
+    for (std::size_t step = 0; step < u.size() - 2; ++step) {
+        for (std::size_t offset = 0; offset <= step; ++offset) {
+            const int i = 1 + step - offset;
+            const int j = 1 + offset;
+
+            u[i][j] = (u[i][j - 1] + u[i - 1][j]
+                     + u[i][j + 1] + u[i + 1][j]
+                     + h * h * f(i * h, j * h)) * 0.25;
+        }
+    }
+
+    iteration_count = 0;
+    const std::size_t thread_count = u.size() - 2;
+    std::vector<std::thread> threads;
+    barrier b1(thread_count), b2(thread_count);
+    bool running = true;
+
+    auto worker = [&](const std::size_t offset) {
+        bool local_run = running;
+        int local_iter = iteration_count;
+
+        while (local_run && local_iter < max_iterations) {
+            local_run = false;
+
+            if (std::this_thread::get_id() == threads.front().get_id()) {
+                ++iteration_count;
+                running = false;
+            }
+
+            for (std::size_t step = 0; step < u.size() - 2; ++step) {
+                const int i = 1 + ((step - offset + u.size() - 2) % (u.size() - 2));
+                const int j = 1 + offset;
+
+                auto u_old = u[i][j];
+                u[i][j] = (u[i][j - 1] + u[i - 1][j]
+                         + u[i][j + 1] + u[i + 1][j]
+                         + h * h * f(i * h, j * h)) * 0.25;
+
+                // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
+                local_run = local_run || std::abs(u[i][j] - u_old) > change_threshold;
+            }
+
+            // Sync
+            b1.wait(); // TODO: Barrier wird noch nicht wieder resetet!
+            if (local_run)
+                running = true;
+            b2.wait();
+            local_run = running;
+        }
+    };
+
     --iteration_count; // Fix count
 
     // Das Ergebnis ist nicht identisch mit der sequenziellen Version, da immer
