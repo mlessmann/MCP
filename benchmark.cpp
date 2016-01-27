@@ -8,6 +8,8 @@
 #include <stdexcept>
 
 // Standardwerte für Abbruchkriterien
+static const int    n_min                = 64;
+static const int    n_max                = 512;
 static const double def_change_threshold = 1.0 / 10000;
 static const int    def_max_iterations   = 100000;
 
@@ -46,7 +48,7 @@ double computeMeanError(const vector_t &v1, const vector_t &v2) {
             sum += std::abs(v1[i][j] - v2[i][j]);
         }
     }
-    return sum / v1.size() / v1.size();
+    return sum / (v1.size() - 2) / (v1.size() - 2);
 }
 
 double computeMaximumError(const vector_t &v1, const vector_t &v2) {
@@ -85,7 +87,7 @@ void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
               << ", Mittlerer Fehler zu Seq: " << parMeanError <<  "\n";
 }
 
-void jakobiBenchmark(int nMin, int nMax) {
+void jakobiBenchmark() {
     std::cout << "Starte Jakobi Benchmark\n";
 
     int iter_count_seq, iter_count_par;
@@ -94,14 +96,14 @@ void jakobiBenchmark(int nMin, int nMax) {
     auto parFunc = [&](const vector_t &u, const double h) {
         return jakobiParallel(u, f, h, iter_count_par, def_change_threshold, def_max_iterations); };
 
-    for (int n = nMin; n <= nMax; n*=2) {
+    for (int n = n_min; n <= n_max; n*=2) {
         std::cout << "n=" << n << "\n";
         executeBenchmark(n, seqFunc, parFunc);
         std::cout << "Iterationen: Seq=" << iter_count_seq << ", Par=" << iter_count_par << "\n\n";
     }
 }
 
-void gaussSeidelBenchmark(int nMin, int nMax) {
+void gaussSeidelBenchmark() {
     std::cout << "Starte Gauss-Seidel Benchmark\n";
 
     int iter_count_seq, iter_count_par;
@@ -110,14 +112,14 @@ void gaussSeidelBenchmark(int nMin, int nMax) {
     auto parFunc = [&](const vector_t &u, const double h) {
         return gaussSeidelParallel(u, f, h, iter_count_par, def_change_threshold, def_max_iterations); };
 
-    for (int n = nMin; n <= nMax; n*=2) {
+    for (int n = n_min; n <= n_max; n*=2) {
         std::cout << "n=" << n << "\n";
         executeBenchmark(n, seqFunc, parFunc);
         std::cout << "Iterationen: Seq=" << iter_count_seq << ", Par=" << iter_count_par << "\n\n";
     }
 }
 
-void mehrgitterBenchmark(int nMin, int nMax) {
+void mehrgitterBenchmark() {
     std::cout << "Starte Mehrgitter Benchmark\n";
 
     // Helfer: Liste schick darstellen.
@@ -130,7 +132,7 @@ void mehrgitterBenchmark(int nMin, int nMax) {
         return res + "]";
     };
 
-    for (int n = nMin; n <= nMax; n*=2) {
+    for (int n = n_min; n <= n_max; n*=2) {
         for (int alpha = 1; alpha <= 2; alpha++) {
             for (int z1 = 8; z1 <= 256; z1*=2) {
                 for (int z2 = 8; z2 <= 256; z2*=2) {
@@ -151,7 +153,7 @@ void mehrgitterBenchmark(int nMin, int nMax) {
 int main(int argc, char** argv) {
     std::cout << std::fixed << std::setprecision(4);
 
-    jakobiBenchmark(64, 512);
-    gaussSeidelBenchmark(64, 512);
-    //mehrgitterBenchmark(128, 256); // Zu viele Ausgaben, daher temporär auskommentiert. (TODO)
+    jakobiBenchmark();
+    gaussSeidelBenchmark();
+    //mehrgitterBenchmark(); // Zu viele Ausgaben, daher temporär auskommentiert. (TODO)
 }

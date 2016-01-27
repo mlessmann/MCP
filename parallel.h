@@ -70,7 +70,7 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
         running = false;
 
         for (std::size_t step = 0; step < u.size() - 2; ++step) {
-            #pragma omp parallel for
+            #pragma omp parallel for reduction(||:running)
             for (std::size_t offset = 0; offset < u.size() - 2; ++offset) {
                 const int i = 1 + ((step - offset + u.size() - 2) % (u.size() - 2));
                 const int j = 1 + offset;
@@ -81,8 +81,7 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                          + h * h * f(i * h, j * h)) * 0.25;
 
                 // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
-                if (std::abs(u[i][j] - u_old) > change_threshold)
-                    running = true; // Unsynchronisiert. Sollte kein Problem (bzgl. Korrektheit) sein.
+                running = running || (std::abs(u[i][j] - u_old) > change_threshold);
             }
         }
     }
