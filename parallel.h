@@ -18,11 +18,12 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
     bool running = true;
     iteration_count = 0;
     const int size = u.size() - 1;
+
     while (running && iteration_count++ < max_iterations) {
         std::swap(u, u_old);
         running = false;
 
-        #pragma omp parallel for schedule(static, size - 1), collapse(2)
+        #pragma omp parallel for schedule(static) reduction(||:running) collapse(2)
         for (std::size_t i = 1; i < size; ++i) {
             for (std::size_t j = 1; j < size; ++j) {
                 u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
@@ -30,8 +31,7 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
                          + h * h * f(i * h, j * h)) * 0.25;
 
                 // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
-                if (std::abs(u[i][j] - u_old[i][j]) > change_threshold)
-                    running = true; // Unsynchronisiert. Sollte kein Problem (bzgl. Korrektheit) sein.
+                running = running || (std::abs(u[i][j] - u_old[i][j]) > change_threshold);
             }
         }
     }
