@@ -39,8 +39,7 @@ vector_t createVector(int n, Func f) {
     return u;
 }
 
-// FK: Das Ding ist nicht das, was ich unter Median verstehe. TODO: Nochmal checken.
-double computeMedianError(const vector_t &v1, const vector_t &v2) {
+double computeMeanError(const vector_t &v1, const vector_t &v2) {
     double sum = 0.0;
     for (std::size_t i = 1; i < v1.size() - 1; ++i) {
         for (std::size_t j = 1; j < v1.size() - 1; ++j) {
@@ -60,16 +59,6 @@ double computeMaximumError(const vector_t &v1, const vector_t &v2) {
     return max;
 }
 
-bool vectorEquals(const vector_t &v1, const vector_t &v2) {
-    for (std::size_t i=0; i<v1.size(); i++) {
-        for (std::size_t j=0; j<v1.size(); j++) {
-            if (v1[i][j] != v2[i][j])
-                return false;
-        }
-    }
-    return true;
-}
-
 template <typename SeqFunc, typename ParFunc>
 void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     auto startVector = createVector(n, [](double, double) {return 1.0;}); // Immer noch nicht zufällig
@@ -80,22 +69,20 @@ void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     vector_t seqResult = seqFunc(startVector, h);
     double seqTime = getWallTime() - time;
 
-    double seqMedError = computeMedianError(anaResult, seqResult);
+    double seqMeanError = computeMeanError(anaResult, seqResult);
     double seqMaxError = computeMaximumError(anaResult, seqResult);
     std::cout << "Sequentiell: " << seqTime
-              << "sek, Mittlerer Fehler: " << seqMedError
+              << "sek, Mittlerer Fehler: " << seqMeanError
               << ", Maximaler Fehler: " << seqMaxError << "\n";
 
     time = getWallTime();
     vector_t parResult = parFunc(startVector, h);
     double parTime = getWallTime() - time;
 
-    if (!vectorEquals(seqResult, parResult))
-        // TODO: Toleranz einbauen? Gauß-Seidel Parallel ist nicht exakt identisch mit GS Sequenziell.
-        //throw std::logic_error("Sequentielles und paralleles Ergebnis stimmen nicht überein!\n");
-        std::cout << "Sequentielles und paralleles Ergebnis stimmen nicht überein!\n";
+    double parMeanError = computeMeanError(seqResult, parResult);
     std::cout << "Parallel: " << parTime
-              << "sek, Speedup: " << seqTime / parTime << "\n";
+              << "sek, Speedup: " << seqTime / parTime
+              << ", Mittlerer Fehler zu Seq: " << parMeanError <<  "\n";
 }
 
 void jakobiBenchmark(int nMin, int nMax) {

@@ -17,13 +17,14 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
     auto u_old = u; // Kopie
     bool running = true;
     iteration_count = 0;
+    const int size = u.size() - 1;
     while (running && iteration_count++ < max_iterations) {
         std::swap(u, u_old);
         running = false;
 
-        #pragma omp parallel for schedule(static, u.size() - 2), collapse(2)
-        for (std::size_t i = 1; i < u.size() - 1; ++i) {
-            for (std::size_t j = 1; j < u.size() - 1; ++j) {
+        #pragma omp parallel for schedule(static, size - 1), collapse(2)
+        for (std::size_t i = 1; i < size; ++i) {
+            for (std::size_t j = 1; j < size; ++j) {
                 u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
                          + u_old[i][j + 1] + u_old[i + 1][j]
                          + h * h * f(i * h, j * h)) * 0.25;
@@ -117,7 +118,7 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
     vector_t v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
     // Restriktion
-    #pragma omp for collapse(2)
+    #pragma omp parallel for schedule(static) collapse(2)
     for (int i = 1; i <= n_new; ++i)
         for (int j = 1; j <= n_new; ++j)
             v2h[i][j] = 0.125 * (4*vh[2*i][2*j] + vh[2*i - 1][2*j] + vh[2*i + 1][2*j]
@@ -129,11 +130,9 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
                                  iteration_count, change_threshold, max_iterations);
 
     // Interpolation
-    #pragma omp for collapse(2)
+    #pragma omp parallel for schedule(static) collapse(2)
     for (std::size_t i = 1; i < u.size() - 1; ++i)
         for (std::size_t j = 1; j < u.size() - 1; ++j)
-            // FK: Ist es absicht, dass immer für 4 Punkte der gleiche Werte berechnet wird?
-            //     Wenn ja, dann kann man hier 3/4 aller Berechnungen einsparen.
             vh[i][j] =  0.25 * (v2h[i/2][j/2] + v2h[i/2][j/2 + 1] +
                                 v2h[i/2 + 1][j/2] + v2h[i/2 + 1][j/2 + 1]);
 
