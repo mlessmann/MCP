@@ -17,12 +17,13 @@ vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
     auto u_old = u; // Kopie
     bool running = true;
     iteration_count = 0;
+    const int size = u.size() - 1;
     while (running && iteration_count++ < max_iterations) {
         std::swap(u, u_old);
         running = false;
 
-        for (std::size_t i = 1; i < u.size() - 1; ++i) {
-            for (std::size_t j = 1; j < u.size() - 1; ++j) {
+        for (std::size_t i = 1; i < size; ++i) {
+            for (std::size_t j = 1; j < size; ++j) {
                 u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
                          + u_old[i][j + 1] + u_old[i + 1][j]
                          + h * h * f(i * h, j * h)) * 0.25;

@@ -17,13 +17,14 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
     auto u_old = u; // Kopie
     bool running = true;
     iteration_count = 0;
+    const int size = u.size() - 1;
     while (running && iteration_count++ < max_iterations) {
         std::swap(u, u_old);
         running = false;
 
-        #pragma omp parallel for schedule(static, u.size() - 2), collapse(2)
-        for (std::size_t i = 1; i < u.size() - 1; ++i) {
-            for (std::size_t j = 1; j < u.size() - 1; ++j) {
+        #pragma omp parallel for schedule(static, size - 1), collapse(2)
+        for (std::size_t i = 1; i < size; ++i) {
+            for (std::size_t j = 1; j < size; ++j) {
                 u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
                          + u_old[i][j + 1] + u_old[i + 1][j]
                          + h * h * f(i * h, j * h)) * 0.25;
