@@ -8,8 +8,8 @@
 #include <stdexcept>
 
 // Standardwerte für Abbruchkriterien
-static const double def_change_threshold = 1.0 / 1000;
-static const int    def_max_iterations   = 1000;
+static const double def_change_threshold = 1.0 / 10000;
+static const int    def_max_iterations   = 10000;
 
 // Eingabefunktion
 double f(double x, double y) {
@@ -42,18 +42,18 @@ vector_t createVector(int n, Func f) {
 // FK: Das Ding ist nicht das, was ich unter Median verstehe. TODO: Nochmal checken.
 double computeMedianError(const vector_t &v1, const vector_t &v2) {
     double sum = 0.0;
-    for (std::size_t i=0; i<v1.size(); i++) {
-        for (std::size_t j=0; j<v1.size(); j++) {
+    for (std::size_t i = 1; i < v1.size() - 1; ++i) {
+        for (std::size_t j = 1; j < v1.size() - 1; ++j) {
             sum += std::abs(v1[i][j] - v2[i][j]);
         }
     }
-    return sum / v1.size() / v1.size();
+    return sum / (v1.size() - 2) / (v1.size() - 2);
 }
 
 double computeMaximumError(const vector_t &v1, const vector_t &v2) {
     double max = 0.0;
-    for (std::size_t i=0; i<v1.size(); i++) {
-        for (std::size_t j=0; j<v1.size(); j++) {
+    for (std::size_t i = 1; i < v1.size() - 1; ++i) {
+        for (std::size_t j = 1; j < v1.size() - 1; ++j) {
             max = std::max(max, std::abs(v1[i][j] - v2[i][j]));
         }
     }
@@ -164,7 +164,7 @@ void mehrgitterBenchmark(int nMin, int nMax) {
 int main(int argc, char** argv) {
     std::cout << std::fixed << std::setprecision(4);
 
-    jakobiBenchmark(64, 512);
-    gaussSeidelBenchmark(64, 512);
+    jakobiBenchmark(64, 256);
+    gaussSeidelBenchmark(64, 256);
     //mehrgitterBenchmark(128, 256); // Zu viele Ausgaben, daher temporär auskommentiert. (TODO)
 }
