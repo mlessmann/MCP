@@ -91,6 +91,7 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
     // Das Ergebnis ist nicht identisch mit der sequenziellen Version, da immer
     // zwei Iterationen parallel auf einem Vektor durchgeführt werden. Der
     // Vektor hat demnach nie den Zustand wie nach genau einer Iteration.
+    // TODO: Einfach nochmal die letzte Hälfte implementieren.
     return u;
 }
 
