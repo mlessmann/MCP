@@ -117,6 +117,7 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
     vector_t v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
     // Restriktion
+    #pragma omp parallel for schedule(static) collapse(2)
     for (int i = 1; i <= n_new; ++i)
         for (int j = 1; j <= n_new; ++j)
             v2h[i][j] = 0.125 * (4*vh[2*i][2*j] + vh[2*i - 1][2*j] + vh[2*i + 1][2*j]
@@ -128,6 +129,7 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
                                  iteration_count, change_threshold, max_iterations);
 
     // Interpolation
+    #pragma omp parallel for schedule(static) collapse(2)
     for (std::size_t i = 1; i < u.size() - 1; ++i)
         for (std::size_t j = 1; j < u.size() - 1; ++j)
             vh[i][j] =  0.25 * (v2h[i/2][j/2] + v2h[i/2][j/2 + 1] +
