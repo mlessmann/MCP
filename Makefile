@@ -4,8 +4,8 @@ CXXFLAGS := -std=c++11 -O2 -Wall -fopenmp
 LDLIBS   := -lOpenCL
 
 # Benchmark sources:
-HEADERS := barrier.h sequential.h parallel.h
-SOURCES := benchmark.cpp barrier.cpp
+HEADERS := sequential.h parallel.h
+SOURCES := benchmark.cpp
 
 .PHONY: all
 all: benchmark
