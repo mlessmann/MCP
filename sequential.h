@@ -106,7 +106,7 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
     // Interpolation
     for (std::size_t i = 1; i < u.size() - 1; ++i)
         for (std::size_t j = 1; j < u.size() - 1; ++j)
-            vh[i][j] =  0.25 * (v2h[i/2][j/2] + v2h[i/2][j/2 + 1] +
+            vh[i][j] =  0.25 * (v2h[i/2][j/2] + v2h[i/2][j/2 + 1] + // TODO: Hier ist noch ein Fehler!
                                 v2h[i/2 + 1][j/2] + v2h[i/2 + 1][j/2 + 1]);
 
     iteration_count.push_back(0);
