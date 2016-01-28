@@ -19,7 +19,8 @@ vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
     bool running = true;
     iteration_count = 0;
     const int size = u.size() - 1;
-    while (running && iteration_count++ < max_iterations) {
+    while (running && iteration_count < max_iterations) {
+        iteration_count++;
         std::swap(u, u_old);
         running = false;
 
@@ -34,7 +35,6 @@ vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
             }
         }
     }
-    --iteration_count; // Fix count
 
     return u;
 }
@@ -50,7 +50,8 @@ vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
 {
     bool running = true;
     iteration_count = 0;
-    while (running && iteration_count++ < max_iterations) {
+    while (running && iteration_count < max_iterations) {
+        iteration_count++;
         running = false;
 
         for (std::size_t i = 1; i < u.size() - 1; ++i) {
@@ -65,7 +66,6 @@ vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
             }
         }
     }
-    --iteration_count; // Fix count
 
     return u;
 }
