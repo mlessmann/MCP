@@ -15,17 +15,18 @@ vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
                 const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
                 const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
+    iteration_count = 0;
     auto u_old = u; // Kopie
     bool running = true;
-    iteration_count = 0;
     const int size = u.size() - 1;
+
     while (running && iteration_count < max_iterations) {
         ++iteration_count;
         std::swap(u, u_old);
         running = false;
 
-        for (std::size_t i = 1; i < size; ++i) {
-            for (std::size_t j = 1; j < size; ++j) {
+        for (int i = 1; i < size; ++i) {
+            for (int j = 1; j < size; ++j) {
                 u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
                          + u_old[i][j + 1] + u_old[i + 1][j]
                          + h * h * f(i * h, j * h)) * 0.25;
@@ -48,14 +49,16 @@ vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
                      const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
                      const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
-    bool running = true;
     iteration_count = 0;
+    bool running = true;
+    const int size = u.size() - 1;
+
     while (running && iteration_count < max_iterations) {
         ++iteration_count;
         running = false;
 
-        for (std::size_t i = 1; i < u.size() - 1; ++i) {
-            for (std::size_t j = 1; j < u.size() - 1; ++j) {
+        for (int i = 1; i < size; ++i) {
+            for (int j = 1; j < size; ++j) {
                 auto u_old = u[i][j];
                 u[i][j] = (u[i][j - 1] + u[i - 1][j]
                          + u[i][j + 1] + u[i + 1][j]

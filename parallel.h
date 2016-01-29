@@ -15,9 +15,9 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
                         const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
                         const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
+    iteration_count = 0;
     auto u_old = u; // Kopie
     bool running = true;
-    iteration_count = 0;
     const int size = u.size() - 1;
 
     while (running && iteration_count < max_iterations) {
@@ -26,8 +26,8 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
         running = false;
 
         #pragma omp parallel for reduction(||:running) collapse(2)
-        for (std::size_t i = 1; i < size; ++i) {
-            for (std::size_t j = 1; j < size; ++j) {
+        for (int i = 1; i < size; ++i) {
+            for (int j = 1; j < size; ++j) {
                 u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
                          + u_old[i][j + 1] + u_old[i + 1][j]
                          + h * h * f(i * h, j * h)) * 0.25;
@@ -52,10 +52,11 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
 {
     iteration_count = 0;
     const int size = u.size() - 2;
+
     // Vorlauf.
-    for (std::size_t step = 0; step < size; ++step) {
+    for (int step = 0; step < size; ++step) {
         #pragma omp parallel for
-        for (std::size_t offset = 0; offset <= step; ++offset) {
+        for (int offset = 0; offset <= step; ++offset) {
             const int i = 1 + step - offset;
             const int j = 1 + offset;
 
@@ -72,9 +73,9 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
         ++iteration_count;
         running = false;
 
-        for (std::size_t step = 0; step < size; ++step) {
+        for (int step = 0; step < size; ++step) {
             #pragma omp parallel for reduction(||:running)
-            for (std::size_t offset = 0; offset < size; ++offset) {
+            for (int offset = 0; offset < size; ++offset) {
                 const int i = 1 + ((step - offset + size) % size);
                 const int j = 1 + offset;
 
@@ -135,8 +136,8 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
 
     // Interpolation
     #pragma omp parallel for schedule(static) collapse(2)
-    for (std::size_t i = 0; i < n; i+=2) {
-        for (std::size_t j = 0; j < n; j+=2) {
+    for (int i = 0; i < n; i+=2) {
+        for (int j = 0; j < n; j+=2) {
             vh[i+1][j+1] = v2h[i/2+1][j/2+1];
             vh[i+1][j+2] = 0.5 * (v2h[i/2+1][j/2+1] + v2h[i/2+1][j/2+1]);
             vh[i+2][j+1] = 0.5 * (v2h[i/2+1][j/2+1] + v2h[i/2+2][j/2+1]);
