@@ -1,5 +1,8 @@
-Protokoll.pdf: Protokoll.tex
-	pdflatex $^
+Protokoll.pdf: Protokoll.tex Protokoll.aux
+	pdflatex $<
+
+Protokoll.aux: Protokoll.tex
+	pdflatex $<
 
 .PHONY: clean
 clean:
