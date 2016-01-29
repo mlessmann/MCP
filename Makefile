@@ -21,7 +21,12 @@ test-opencl: opencl
 opencl: opencl.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(OCLLIBS)
 
+.PHONY: doc
+doc: doc/Protokoll.tex
+	$(MAKE) -C doc
+
 .PHONY: clean
 clean:
-	rm -f benchmark
-	rm -f opencl
+	$(MAKE) -C doc clean
+	#rm -f benchmark
+	#rm -f opencl
