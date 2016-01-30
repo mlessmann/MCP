@@ -50,10 +50,10 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                              const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
                              const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
-    iteration_count = 0;
+    iteration_count = 1; // Am Ende haben wir immer eine Iteration mehr als die sequezielle Version.
     const int size = u.size() - 2;
 
-    // Vorlauf.
+    // Vorlauf
     for (int step = 0; step < size; ++step) {
         #pragma omp parallel for
         for (int offset = 0; offset <= step; ++offset) {
@@ -66,8 +66,8 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
         }
     }
 
-    // Die erste halbe Iteration ist fast vollzogen. Mit der Diagonalen geht
-    // es weiter und ab jetzt mit Anzahl der Threads = "u.size() ohne Rand".
+    // Die erste halbe Iteration ist vollzogen. Hinter der Diagonalen geht
+    // es weiter und ab jetzt mit Anzahl der Threads = u.size() ohne Rand.
     bool running = true;
     while (running && iteration_count < max_iterations) {
         ++iteration_count;
@@ -90,10 +90,21 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
         }
     }
 
-    // Das Ergebnis ist nicht identisch mit der sequenziellen Version, da immer
-    // zwei Iterationen parallel auf einem Vektor durchgeführt werden. Der
-    // Vektor hat demnach nie den Zustand wie nach genau einer Iteration.
-    // TODO: Einfach nochmal die letzte Hälfte implementieren.
+    // Nachlauf
+    for (int step = 0; step < size - 1; ++step) {
+        #pragma omp parallel for
+        for (int offset = 0; offset < (size - 1) - step; ++offset) {
+            const int i = size - offset;
+            const int j = 2 + step + offset;
+
+            u[i][j] = (u[i][j - 1] + u[i - 1][j]
+                     + u[i][j + 1] + u[i + 1][j]
+                     + h * h * f(i * h, j * h)) * 0.25;
+        }
+    }
+
+    // Wenn "change_threshold" als Abbruchbedingung zum Tragen kommt, werden
+    // wir eine Iteration mehr gemacht haben, als die sequenzielle Version.
     return u;
 }
 
