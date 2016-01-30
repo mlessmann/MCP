@@ -1,15 +1,16 @@
-#include "sequential.h"
 #include "parallel.h"
+#include "sequential.h"
 #include <cmath>
-#include <sys/time.h>
-#include <iostream>
-#include <iomanip>
 #include <functional>
+#include <iomanip>
+#include <iostream>
+#include <random>
 #include <stdexcept>
+#include <sys/time.h>
 
 // Grenzwerte für Benchmarkläufe
-static const int    n_min                = 2048;
-static const int    n_max                = 2048;
+static const int    n_min                = 128;
+static const int    n_max                = 256;
 static const int    alpha_min            = 1;
 static const int    alpha_max            = 1;
 static const int    z1_min               = 32;
@@ -71,7 +72,9 @@ double computeMaximumError(const vector_t &v1, const vector_t &v2) {
 
 template <typename SeqFunc, typename ParFunc>
 void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
-    auto startVector = createVector(n, [](double, double) {return 0.5;}); // Immer noch nicht zufällig
+    std::random_device rand;
+    std::uniform_real_distribution<double> dist(-10, 10); // Eingeschränkte Zufälligkeit
+    auto startVector = createVector(n, [&](double, double) {return dist(rand);});
     auto anaResult = createVector(n, u);
     double h = 1.0 / (n + 1);
 
