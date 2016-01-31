@@ -128,9 +128,10 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                     // Dreieck 1. Überspringe lange Kante, bzw. Diagonale,
                     // da diese bereits von Dreieck 2, bzw. vom Vorlauf
                     // erfasst wurde.
-                    for (int col = 1; col < chunk_size; ++col) {
-                        for (int row = 1; row <= chunk_size - col; ++row) {
-                            const int i = 1 + ((chunk_size - row - chunk_offset + size) % size);
+                    for (int col = 0; col < chunk_size - 1; ++col) {
+                        for (int row = 1; row < chunk_size - col; ++row) {
+                            // TODO: Check/Debug ob das hier stimmt:
+                            const int i = 1 + ((-row + chunk_col - chunk_offset + size) % size);
                             const int j = 1 + row + col + chunk_offset;
 
                             auto u_old = u[i][j];
