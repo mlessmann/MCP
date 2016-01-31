@@ -70,6 +70,14 @@ double computeMaximumError(const vector_t &v1, const vector_t &v2) {
     return max;
 }
 
+bool operator==(const vector_t &v1, const vector_t &v2) {
+    for (std::size_t i = 1; i < v1.size() - 1; ++i)
+        for (std::size_t j = 1; j < v1.size() - 1; ++j)
+            if (v1[i][j] != v2[i][j])
+                return false;
+    return true;
+}
+
 template <typename SeqFunc, typename ParFunc>
 void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     std::random_device rand;
@@ -96,6 +104,9 @@ void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     std::cout << "Parallel: " << parTime
               << "sek, Speedup: " << seqTime / parTime
               << ", Mittlerer Fehler zu Seq: " << parMeanError <<  "\n";
+
+    if (seqResult != parResult)
+        std::cout << "Debug: Die Ergebnisvektoren sind nicht äquivalent!\n";
 }
 
 void jakobiBenchmark() {
