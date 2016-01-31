@@ -32,4 +32,4 @@
 *.dSYM/
 
 benchmark
-test-opencl
+opencl
