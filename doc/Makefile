@@ -1,4 +1,6 @@
-Protokoll.pdf: Protokoll.tex Protokoll.aux
+IMAGES := $(wildcard *.jpg)
+
+Protokoll.pdf: Protokoll.tex Protokoll.aux $(IMAGES)
 	pdflatex $<
 
 Protokoll.aux: Protokoll.tex
