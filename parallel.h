@@ -69,7 +69,7 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
     }
 
     // Ermittle, ob/wie sich der Vektor gleichmäßig aufteilen lässt.
-    const int thread_count = omp_get_num_threads();
+    const int thread_count = omp_get_max_threads();
     int chunk_size = 1;
     bool simple_run = false;
     while (size / chunk_size > thread_count) {
@@ -82,8 +82,8 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
         }
     }
 
-    // Debug: Erzwinge simple_run. TODO: Entfernen.
-    simple_run = true;
+    // Debug: Erzwinge simple_run.
+    //simple_run = true;
 
     // Wenn sich der Vektor nicht gut oder nur sehr fein aufteilen lässt,
     // verfahre nach dem einfachen, parallelen Verfahren.
@@ -120,6 +120,8 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
             ++iteration_count;
             running = false;
 
+            // TODO: Die Dreiecke können hier auch anders, möglicherweise
+            // cacheeffizienter durchlaufen werden. Noch zu verbessern!
             for (int chunk_col = 0; chunk_col < size; chunk_col += chunk_size) {
                 // Achtung: Hier kein collapse() einfügen!
                 #pragma omp parallel for reduction(||:running)
@@ -130,8 +132,7 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                     // erfasst wurde.
                     for (int col = 0; col < chunk_size - 1; ++col) {
                         for (int row = 1; row < chunk_size - col; ++row) {
-                            // TODO: Check/Debug ob das hier stimmt:
-                            const int i = 1 + ((-row + chunk_col - chunk_offset + size) % size);
+                            const int i = 1 + ((chunk_col - row - chunk_offset + size) % size);
                             const int j = 1 + row + col + chunk_offset;
 
                             auto u_old = u[i][j];
@@ -150,7 +151,20 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                 for (int chunk = 0; chunk < chunk_count; ++chunk) {
                     const int chunk_offset = chunk * chunk_size;
                     // Dreieck 2
-                    // TODO...
+                    for (int col = 0; col < chunk_size; ++col) {
+                        for (int row = 0; row <= col; ++row) {
+                            const int i = 1 + ((chunk_col + col - row - chunk_offset + size) % size);
+                            const int j = 1 + row + chunk_offset;
+
+                            auto u_old = u[i][j];
+                            u[i][j] = (u[i][j - 1] + u[i - 1][j]
+                                     + u[i][j + 1] + u[i + 1][j]
+                                     + h * h * f(i * h, j * h)) * 0.25;
+
+                            // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
+                            running = running || std::abs(u[i][j] - u_old) > change_threshold;
+                        }
+                    }
                 }
             }
         }
