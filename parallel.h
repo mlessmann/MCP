@@ -56,11 +56,11 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
 
     // Vorlauf. Die erste halbe Iteration wird vorgezogen, damit anschließend
     // gleichmäßig parallel gerechnet werden kann.
-    for (int step = 0; step < size; ++step) {
+    for (int col = 0; col < size; ++col) {
         #pragma omp parallel for
-        for (int offset = 0; offset <= step; ++offset) {
-            const int i = 1 + step - offset;
-            const int j = 1 + offset;
+        for (int row = 0; row <= col; ++row) {
+            const int i = 1 + col - row;
+            const int j = 1 + row;
 
             u[i][j] = (u[i][j - 1] + u[i - 1][j]
                      + u[i][j + 1] + u[i + 1][j]
@@ -70,11 +70,11 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
 
     // Ermittle, ob/wie sich der Vektor gleichmäßig aufteilen lässt.
     const int thread_count = omp_get_num_threads();
-    int chunk_width = 1;
+    int chunk_size = 1;
     bool simple_run = false;
-    while (size / chunk_width > thread_count) {
-        chunk_width *= 2;
-        if (size % chunk_width != 0) {
+    while (size / chunk_size > thread_count) {
+        chunk_size *= 2;
+        if (size % chunk_size != 0) {
             // Vektor lässt sich nicht (weiter) gleichmäßig unterteilen.
             // Fallback zur einfachen, parallelen Verarbeitung.
             simple_run = true;
@@ -87,17 +87,18 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
 
     // Wenn sich der Vektor nicht gut oder nur sehr fein aufteilen lässt,
     // verfahre nach dem einfachen, parallelen Verfahren.
-    if (simple_run || chunk_width < 2) {
+    // TODO: Was ist hier ein guter Faktor?
+    if (simple_run || chunk_size < 4) {
         bool running = true;
         while (running && iteration_count < max_iterations) {
             ++iteration_count;
             running = false;
 
-            for (int step = 0; step < size; ++step) {
+            for (int col = 0; col < size; ++col) {
                 #pragma omp parallel for reduction(||:running)
-                for (int offset = 0; offset < size; ++offset) {
-                    const int i = 1 + ((step - offset + size) % size);
-                    const int j = 1 + offset;
+                for (int row = 0; row < size; ++row) {
+                    const int i = 1 + ((col - row + size) % size);
+                    const int j = 1 + row;
 
                     auto u_old = u[i][j];
                     u[i][j] = (u[i][j - 1] + u[i - 1][j]
@@ -105,31 +106,50 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                              + h * h * f(i * h, j * h)) * 0.25;
 
                     // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
-                    running = running || std::abs(u[i][j] - u_old) > change_threshold ;
+                    running = running || std::abs(u[i][j] - u_old) > change_threshold;
                 }
             }
         }
     }
     // Wenn sich der Vektor gut aufteilen lässt, bilde in sich datenabhängige
-    // Gruppen, die zu einer besseren Auslastung der Threads führen sollen.
+    // Gruppen, um eine besseren Auslastung der Threads zu erreichen.
     else {
-        const int chunk_count = size / chunk_width;
+        const int chunk_count = size / chunk_size;
         bool running = true;
         while (running && iteration_count < max_iterations) {
             ++iteration_count;
             running = false;
 
-            for (int step = 0; step < size; step += chunk_width) {
-                // Achtung: Hier kein collapse(2) einfügen!
+            for (int chunk_col = 0; chunk_col < size; chunk_col += chunk_size) {
+                // Achtung: Hier kein collapse() einfügen!
                 #pragma omp parallel for reduction(||:running)
                 for (int chunk = 0; chunk < chunk_count; ++chunk) {
-                    // TODO: Dreieck 1
+                    const int chunk_offset = chunk * chunk_size;
+                    // Dreieck 1. Überspringe lange Kante, bzw. Diagonale,
+                    // da diese bereits von Dreieck 2, bzw. vom Vorlauf
+                    // erfasst wurde.
+                    for (int col = 1; col < chunk_size; ++col) {
+                        for (int row = 1; row <= chunk_size - col; ++row) {
+                            const int i = 1 + ((chunk_size - row - chunk_offset + size) % size);
+                            const int j = 1 + row + col + chunk_offset;
+
+                            auto u_old = u[i][j];
+                            u[i][j] = (u[i][j - 1] + u[i - 1][j]
+                                     + u[i][j + 1] + u[i + 1][j]
+                                     + h * h * f(i * h, j * h)) * 0.25;
+
+                            // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
+                            running = running || std::abs(u[i][j] - u_old) > change_threshold;
+                        }
+                    }
                 }
 
-                // Achtung: Hier kein collapse(2) einfügen!
+                // Achtung: Hier kein collapse() einfügen!
                 #pragma omp parallel for reduction(||:running)
                 for (int chunk = 0; chunk < chunk_count; ++chunk) {
-                    // TODO: Dreieck 2
+                    const int chunk_offset = chunk * chunk_size;
+                    // Dreieck 2
+                    // TODO...
                 }
             }
         }
@@ -137,11 +157,11 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
 
     // Nachlauf. Die letzte halbe Iteration wird noch nachgezogen, um das
     // Ergebnis identisch mit der sequenziellen Version zu halten.
-    for (int step = 0; step < size - 1; ++step) {
+    for (int col = 0; col < size - 1; ++col) {
         #pragma omp parallel for
-        for (int offset = 0; offset < (size - 1) - step; ++offset) {
-            const int i = size - offset;
-            const int j = 2 + step + offset;
+        for (int row = 1; row < size - col; ++row) {
+            const int i = 1 + size - row;
+            const int j = 1 + row + col;
 
             u[i][j] = (u[i][j - 1] + u[i - 1][j]
                      + u[i][j + 1] + u[i + 1][j]
