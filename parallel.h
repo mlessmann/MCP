@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <omp.h>
 #include <string>
 #include <vector>
 
@@ -53,7 +54,8 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
     iteration_count = 1; // Am Ende haben wir immer eine Iteration mehr als die sequezielle Version.
     const int size = u.size() - 2;
 
-    // Vorlauf
+    // Vorlauf. Die erste halbe Iteration wird vorgezogen, damit anschließend
+    // gleichmäßig parallel gerechnet werden kann.
     for (int step = 0; step < size; ++step) {
         #pragma omp parallel for
         for (int offset = 0; offset <= step; ++offset) {
@@ -66,31 +68,75 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
         }
     }
 
-    // Die erste halbe Iteration ist vollzogen. Hinter der Diagonalen geht
-    // es weiter und ab jetzt mit Anzahl der Threads = u.size() ohne Rand.
-    bool running = true;
-    while (running && iteration_count < max_iterations) {
-        ++iteration_count;
-        running = false;
+    // Ermittle, ob/wie sich der Vektor gleichmäßig aufteilen lässt.
+    const int thread_count = omp_get_num_threads();
+    int chunk_width = 1;
+    bool simple_run = false;
+    while (size / chunk_width > thread_count) {
+        chunk_width *= 2;
+        if (size % chunk_width != 0) {
+            // Vektor lässt sich nicht (weiter) gleichmäßig unterteilen.
+            // Fallback zur einfachen, parallelen Verarbeitung.
+            simple_run = true;
+            break;
+        }
+    }
 
-        for (int step = 0; step < size; ++step) {
-            #pragma omp parallel for reduction(||:running)
-            for (int offset = 0; offset < size; ++offset) {
-                const int i = 1 + ((step - offset + size) % size);
-                const int j = 1 + offset;
+    // Debug: Erzwinge simple_run. TODO: Entfernen.
+    simple_run = true;
 
-                auto u_old = u[i][j];
-                u[i][j] = (u[i][j - 1] + u[i - 1][j]
-                         + u[i][j + 1] + u[i + 1][j]
-                         + h * h * f(i * h, j * h)) * 0.25;
+    // Wenn sich der Vektor nicht gut oder nur sehr fein aufteilen lässt,
+    // verfahre nach dem einfachen, parallelen Verfahren.
+    if (simple_run || chunk_width < 2) {
+        bool running = true;
+        while (running && iteration_count < max_iterations) {
+            ++iteration_count;
+            running = false;
 
-                // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
-                running = running || std::abs(u[i][j] - u_old) > change_threshold ;
+            for (int step = 0; step < size; ++step) {
+                #pragma omp parallel for reduction(||:running)
+                for (int offset = 0; offset < size; ++offset) {
+                    const int i = 1 + ((step - offset + size) % size);
+                    const int j = 1 + offset;
+
+                    auto u_old = u[i][j];
+                    u[i][j] = (u[i][j - 1] + u[i - 1][j]
+                             + u[i][j + 1] + u[i + 1][j]
+                             + h * h * f(i * h, j * h)) * 0.25;
+
+                    // Liegen noch Änderungen der Werte oberhalb des Schwellwertes?
+                    running = running || std::abs(u[i][j] - u_old) > change_threshold ;
+                }
+            }
+        }
+    }
+    // Wenn sich der Vektor gut aufteilen lässt, bilde in sich datenabhängige
+    // Gruppen, die zu einer besseren Auslastung der Threads führen sollen.
+    else {
+        const int chunk_count = size / chunk_width;
+        bool running = true;
+        while (running && iteration_count < max_iterations) {
+            ++iteration_count;
+            running = false;
+
+            for (int step = 0; step < size; step += chunk_width) {
+                // Achtung: Hier kein collapse(2) einfügen!
+                #pragma omp parallel for reduction(||:running)
+                for (int chunk = 0; chunk < chunk_count; ++chunk) {
+                    // TODO: Dreieck 1
+                }
+
+                // Achtung: Hier kein collapse(2) einfügen!
+                #pragma omp parallel for reduction(||:running)
+                for (int chunk = 0; chunk < chunk_count; ++chunk) {
+                    // TODO: Dreieck 2
+                }
             }
         }
     }
 
-    // Nachlauf
+    // Nachlauf. Die letzte halbe Iteration wird noch nachgezogen, um das
+    // Ergebnis identisch mit der sequenziellen Version zu halten.
     for (int step = 0; step < size - 1; ++step) {
         #pragma omp parallel for
         for (int offset = 0; offset < (size - 1) - step; ++offset) {
