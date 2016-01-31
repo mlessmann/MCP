@@ -51,7 +51,7 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                              const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
                              const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
-    iteration_count = 1; // Am Ende haben wir immer eine Iteration mehr als die sequezielle Version.
+    iteration_count = 1; // Vorlauf + Nachlauf = 1 Iteration
     const int size = u.size() - 2;
 
     // Vorlauf. Die erste halbe Iteration wird vorgezogen, damit anschließend
@@ -149,8 +149,6 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
         }
     }
 
-    // Wenn "change_threshold" als Abbruchbedingung zum Tragen kommt, werden
-    // wir eine Iteration mehr gemacht haben, als die sequenzielle Version.
     return u;
 }
 
