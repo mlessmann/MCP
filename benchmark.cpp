@@ -9,8 +9,8 @@
 #include <sys/time.h>
 
 // Grenzwerte für Benchmarkläufe
-static const int    n_min                = 128;
-static const int    n_max                = 256;
+static const int    n_min                = 32;
+static const int    n_max                = 32;
 static const int    alpha_min            = 1;
 static const int    alpha_max            = 1;
 static const int    z1_min               = 32;
@@ -178,7 +178,7 @@ void mehrgitterBenchmark() {
 int main(int argc, char** argv) {
     std::cout << std::fixed << std::setprecision(4);
 
-    jakobiBenchmark();
-    gaussSeidelBenchmark();
+    //jakobiBenchmark();
+    //gaussSeidelBenchmark();
     mehrgitterBenchmark();
 }
