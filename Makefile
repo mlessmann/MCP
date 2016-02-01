@@ -10,6 +10,12 @@ SOURCES := benchmark.cpp
 .PHONY: all
 all: benchmark
 	./$<
+	# Mehrgitter Plot:
+	cp Mehrgitter.plot.template Mehrgitter.plot
+	for file in *.matrix; do \
+	    echo "splot '$$file' matrix using 1:2:3 with lines" >> Mehrgitter.plot; \
+	done
+	gnuplot Mehrgitter.plot
 
 benchmark: $(HEADERS) $(SOURCES)
 	$(CXX) $(CXXFLAGS) -o $@ $(SOURCES) $(LDFLAGS)
@@ -30,3 +36,5 @@ clean:
 	$(MAKE) -C doc clean
 	#rm -f benchmark
 	#rm -f opencl
+	rm *.matrix
+	rm Mehrgitter.plot

@@ -76,12 +76,21 @@ vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
 // Debug
 #include <fstream>
 
-void dump(const std::string &filename, const vector_t &v) {
+void dump(const std::string &desc, const vector_t &v) {
     static int count = 0;
-    std::ofstream fout(filename + std::to_string(count++) + ".csv");
-    for (std::size_t i = 0; i < v.size(); ++i)
-        for (std::size_t j = 0; j < v.size(); ++j)
-            fout << i << ", " << j << ", " << v[i][j] << "\n";
+    std::string count_str = std::to_string(count++);
+    while (count_str.size() < 3)
+        count_str = "0" + count_str;
+
+    std::ofstream fout(count_str + "_" + desc + ".matrix");
+    for (std::size_t i = 0; i < v.size(); ++i) {
+        for (std::size_t j = 0; j < v.size(); ++j) {
+            if (j != 0)
+                fout << " ";
+            fout << v[i][j];
+        }
+        fout << "\n";
+    }
 }
 
 template <typename Func>
@@ -101,14 +110,14 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
         auto res = gaussSeidel(u, f, h, iteration_count.back().second,
                                change_threshold, max_iterations);
         // Debug
-        dump("Mehrgitter", res);
+        dump("mehrgitter", res);
         return res;
     }
 
     iteration_count.emplace_back("Down", 0);
     auto vh = gaussSeidel(u, f, h, iteration_count.back().second, change_threshold, z1);
     // Debug
-    dump("Mehrgitter", vh);
+    dump("mehrgitter", vh);
     const int n_new = (u.size() - 1) / 2;
     vector_t v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
@@ -138,6 +147,6 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
     iteration_count.emplace_back("Up", 0);
     vh = gaussSeidel(vh, f, h, iteration_count.back().second, change_threshold, z2);
     // Debug
-    dump("Mehrgitter", vh);
+    dump("mehrgitter", vh);
     return vh;
 }

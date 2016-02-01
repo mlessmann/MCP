@@ -13,14 +13,14 @@ static const int    n_min                = 32;
 static const int    n_max                = 32;
 static const int    alpha_min            = 1;
 static const int    alpha_max            = 1;
-static const int    z1_min               = 32;
-static const int    z1_max               = 32;
-static const int    z2_min               = 1024;
-static const int    z2_max               = 1024;
-static const int    h_max_factor_min     = 32;
-static const int    h_max_factor_max     = 32;
-static const double def_change_threshold = 1.0 / 10000;
-static const int    def_max_iterations   = 100000;
+static const int    z1_min               = 8;
+static const int    z1_max               = 8;
+static const int    z2_min               = 8;
+static const int    z2_max               = 8;
+static const int    h_max_factor_min     = 4;
+static const int    h_max_factor_max     = 4;
+static const double def_change_threshold = 1.0 / 1000;
+static const int    def_max_iterations   = 1000;
 static const int    seed                 = 0;
 
 // Eingabefunktion
@@ -162,6 +162,8 @@ void mehrgitterBenchmark() {
                     for (int h_max_factor = h_max_factor_min; h_max_factor <= h_max_factor_max; h_max_factor*=2) {
                         std::vector<std::pair<std::string, int>> iter_count_seq, iter_count_par;
                         auto seqFunc = [&](const vector_t &u, const double h) {
+                            // Debug: Dump start vector
+                            dump("startvector", u);
                             return mehrgitter(u, f, z1, z2, h, h*h_max_factor, alpha, iter_count_seq, def_change_threshold, def_max_iterations); };
                         auto parFunc = [&](const vector_t &u, const double h) {
                             return mehrgitterParallel(u, f, z1, z2, h, h*h_max_factor, alpha, iter_count_par, def_change_threshold, def_max_iterations); };

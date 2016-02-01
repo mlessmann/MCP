@@ -1,0 +1,8 @@
+# Nach Datei
+set terminal postscript eps size 7,3.5 enhanced color \
+             font 'Helvetica,20' linewidth 2
+set output "Mehrgitter.eps"
+
+# Plot
+set grid
+#splot "*.matrix" matrix using 1:2:3 with lines
