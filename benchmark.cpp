@@ -82,7 +82,7 @@ bool operator==(const vector_t &v1, const vector_t &v2) {
 template <typename SeqFunc, typename ParFunc>
 void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     std::default_random_engine rand(seed);
-    std::uniform_real_distribution<double> dist(0, 1); // Eingeschränkte Zufälligkeit
+    std::uniform_real_distribution<double> dist(-10, 10); // Eingeschränkte Zufälligkeit
     auto startVector = createVector(n, [&](double, double) {return dist(rand);});
     auto anaResult = createVector(n, u);
     double h = 1.0 / (n + 1);
