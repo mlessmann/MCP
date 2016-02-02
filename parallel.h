@@ -229,7 +229,7 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
     for (int i = 0; i < n; i+=2) {
         for (int j = 0; j < n; j+=2) {
             vh[i+1][j+1] = v2h[i/2+1][j/2+1];
-            vh[i+1][j+2] = 0.5 * (v2h[i/2+1][j/2+1] + v2h[i/2+1][j/2+1]);
+            vh[i+1][j+2] = 0.5 * (v2h[i/2+1][j/2+1] + v2h[i/2+1][j/2+2]);
             vh[i+2][j+1] = 0.5 * (v2h[i/2+1][j/2+1] + v2h[i/2+2][j/2+1]);
             vh[i+2][j+2] = 0.25 * (v2h[i/2+1][j/2+1] + v2h[i/2+1][j/2+2] +
                                    v2h[i/2+2][j/2+1] + v2h[i/2+2][j/2+2]);
