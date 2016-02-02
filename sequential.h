@@ -40,7 +40,7 @@ vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
     return u;
 }
 
-// Gauss-Seidel Verfahren
+// Gauß-Seidel Verfahren
 template <typename Func>
 vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
                      Func         f,                // Eingabefunktion
@@ -119,10 +119,11 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
     // Debug
     dump("Mehrgitter Down, vor Gauss-Seidel", u);
     iteration_count.emplace_back("Down", 0);
-    auto vh = gaussSeidel(u, f, h, iteration_count.back().second, change_threshold, z1);
+    auto vh = gaussSeidel(u, f, h, iteration_count.back().second, 0, z1);
     // Debug
     dump("Mehrgitter Down, nach Gauss-Seidel", vh);
-    const int n_new = (u.size() - 1) / 2;
+    const int n = u.size() - 2;
+    const int n_new = n / 2;
     vector_t v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
     // Restriktion
@@ -138,20 +139,24 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
                              iteration_count, change_threshold, max_iterations);
 
     // Interpolation
-    for (std::size_t i = 0; i < u.size() - 2; i+=2) {
-        for (std::size_t j = 0; j < u.size() - 2; j+=2) {
-            vh[i+1][j+1] = v2h[i/2+1][j/2+1];
-            vh[i+1][j+2] = 0.5 * (v2h[i/2+1][j/2+1] + v2h[i/2+1][j/2+2]);
-            vh[i+2][j+1] = 0.5 * (v2h[i/2+1][j/2+1] + v2h[i/2+2][j/2+1]);
-            vh[i+2][j+2] = 0.25 * (v2h[i/2+1][j/2+1] + v2h[i/2+1][j/2+2] +
-                                   v2h[i/2+2][j/2+1] + v2h[i/2+2][j/2+2]);
+    for (int i = 0; i < n; i+=2) {
+        int i1 = i/2+1;
+        int i2 = i >= n-2 ? i1 : i1 + 1; // Betrachte nicht den Rand
+        for (int j = 0; j < n; j+=2) {
+            int j1 = j/2+1;
+            int j2 = j >= n-2 ? j1 : j1 + 1;
+            vh[i+1][j+1] = v2h[i1][j1];
+            vh[i+1][j+2] = 0.5 * (v2h[i1][j1] + v2h[i1][j2]);
+            vh[i+2][j+1] = 0.5 * (v2h[i1][j1] + v2h[i2][j1]);
+            vh[i+2][j+2] = 0.25 * (v2h[i1][j1] + v2h[i1][j2] +
+                                   v2h[i2][j1] + v2h[i2][j2]);
         }
     }
 
     // Debug
     dump("Mehrgitter Up, vor Gauss-Seidel", vh);
     iteration_count.emplace_back("Up", 0);
-    vh = gaussSeidel(vh, f, h, iteration_count.back().second, change_threshold, z2);
+    vh = gaussSeidel(vh, f, h, iteration_count.back().second, 0, z2);
     // Debug
     dump("Mehrgitter Up, nach Gauss-Seidel", vh);
     return vh;
