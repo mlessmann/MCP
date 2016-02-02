@@ -93,7 +93,8 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
 
     iteration_count.emplace_back("Down", 0);
     auto vh = gaussSeidel(u, f, h, iteration_count.back().second, 0, z1);
-    const int n_new = (u.size() - 1) / 2;
+    const int n = u.size() - 2;
+    const int n_new = n / 2;
     vector_t v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
     // Restriktion
@@ -109,8 +110,8 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
                              iteration_count, change_threshold, max_iterations);
 
     // Interpolation
-    for (std::size_t i = 0; i < u.size() - 2; i+=2) {
-        for (std::size_t j = 0; j < u.size() - 2; j+=2) {
+    for (int i = 0; i < n; i+=2) {
+        for (int j = 0; j < n; j+=2) {
             vh[i+1][j+1] = v2h[i/2+1][j/2+1];
             vh[i+1][j+2] = 0.5 * (v2h[i/2+1][j/2+1] + v2h[i/2+1][j/2+2]);
             vh[i+2][j+1] = 0.5 * (v2h[i/2+1][j/2+1] + v2h[i/2+2][j/2+1]);
