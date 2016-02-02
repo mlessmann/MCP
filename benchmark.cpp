@@ -12,13 +12,13 @@
 static const int    n_min                = 16;
 static const int    n_max                = 2048;
 static const int    alpha_min            = 1;
-static const int    alpha_max            = 1;
-static const int    z1_min               = 32;
+static const int    alpha_max            = 2;
+static const int    z1_min               = 4;
 static const int    z1_max               = 32;
-static const int    z2_min               = 1024;
-static const int    z2_max               = 1024;
-static const int    h_max_factor_min     = 32;
-static const int    h_max_factor_max     = 32;
+static const int    z2_min               = 4;
+static const int    z2_max               = 32;
+static const int    h_max_factor_min     = 4;
+static const int    h_max_factor_max     = 16;
 static const double def_change_threshold = 0;
 static const int    def_max_iterations   = 1000;
 
