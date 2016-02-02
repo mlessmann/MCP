@@ -206,7 +206,7 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
     }
 
     iteration_count.emplace_back("Down", 0);
-    auto vh = gaussSeidelParallel(u, f, h, iteration_count.back().second, change_threshold, z1);
+    auto vh = gaussSeidelParallel(u, f, h, iteration_count.back().second, 0, z1);
     const int n = u.size() - 2;
     const int n_new = n / 2;
     vector_t v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
@@ -237,5 +237,5 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
     }
 
     iteration_count.emplace_back("Up", 0);
-    return gaussSeidelParallel(vh, f, h, iteration_count.back().second, change_threshold, z2);
+    return gaussSeidelParallel(vh, f, h, iteration_count.back().second, 0, z2);
 }
