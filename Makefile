@@ -36,5 +36,5 @@ clean:
 	$(MAKE) -C doc clean
 	#rm -f benchmark
 	#rm -f opencl
-	rm *.matrix
-	rm Mehrgitter.plot
+	rm -f *.matrix
+	rm -f Mehrgitter.plot
