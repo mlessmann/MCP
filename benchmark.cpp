@@ -9,8 +9,8 @@
 #include <sys/time.h>
 
 // Grenzwerte für Benchmarkläufe
-static const int    n_min                = 128;
-static const int    n_max                = 256;
+static const int    n_min                = 16;
+static const int    n_max                = 2048;
 static const int    alpha_min            = 1;
 static const int    alpha_max            = 1;
 static const int    z1_min               = 32;
@@ -19,8 +19,8 @@ static const int    z2_min               = 1024;
 static const int    z2_max               = 1024;
 static const int    h_max_factor_min     = 32;
 static const int    h_max_factor_max     = 32;
-static const double def_change_threshold = 1.0 / 10000;
-static const int    def_max_iterations   = 100000;
+static const double def_change_threshold = 0;
+static const int    def_max_iterations   = 1000;
 
 // Eingabefunktion
 double f(double x, double y) {
@@ -80,9 +80,7 @@ bool operator==(const vector_t &v1, const vector_t &v2) {
 
 template <typename SeqFunc, typename ParFunc>
 void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
-    std::random_device rand;
-    std::uniform_real_distribution<double> dist(-10, 10); // Eingeschränkte Zufälligkeit
-    auto startVector = createVector(n, [&](double, double) {return dist(rand);});
+    auto startVector = createVector(n, [&](double, double) {return 0;});
     auto anaResult = createVector(n, u);
     double h = 1.0 / (n + 1);
 
@@ -92,25 +90,18 @@ void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
 
     double seqMeanError = computeMeanError(anaResult, seqResult);
     double seqMaxError = computeMaximumError(anaResult, seqResult);
-    std::cout << "Sequentiell: " << seqTime
-              << "sek, Mittlerer Fehler: " << seqMeanError
-              << ", Maximaler Fehler: " << seqMaxError << "\n";
 
     time = getWallTime();
     vector_t parResult = parFunc(startVector, h);
     double parTime = getWallTime() - time;
 
-    double parMeanError = computeMeanError(seqResult, parResult);
-    std::cout << "Parallel: " << parTime
-              << "sek, Speedup: " << seqTime / parTime
-              << ", Mittlerer Fehler zu Seq: " << parMeanError <<  "\n";
-
-    if (seqResult != parResult)
-        std::cout << "Debug: Die Ergebnisvektoren sind nicht äquivalent!\n";
+    std::cout << seqTime << ";" << parTime << ";" << seqTime / parTime << ";"
+              << seqMeanError << ";" << seqMaxError;
 }
 
 void jakobiBenchmark() {
     std::cout << "Starte Jakobi Benchmark\n";
+    std::cout << "n;seqTime;parTime;speedup;meanError;maxError;iterSeq;iterPar\n";
 
     int iter_count_seq, iter_count_par;
     auto seqFunc = [&](const vector_t &u, const double h) {
@@ -119,14 +110,15 @@ void jakobiBenchmark() {
         return jakobiParallel(u, f, h, iter_count_par, def_change_threshold, def_max_iterations); };
 
     for (int n = n_min; n <= n_max; n*=2) {
-        std::cout << "n=" << n << "\n";
+        std::cout << n << ";";
         executeBenchmark(n, seqFunc, parFunc);
-        std::cout << "Iterationen: Seq=" << iter_count_seq << ", Par=" << iter_count_par << "\n\n";
+        std::cout << ";" << iter_count_seq << ";" << iter_count_par << "\n";
     }
 }
 
 void gaussSeidelBenchmark() {
     std::cout << "Starte Gauss-Seidel Benchmark\n";
+    std::cout << "n;seqTime;parTime;speedup;meanError;maxError;iterSeq;iterPar\n";
 
     int iter_count_seq, iter_count_par;
     auto seqFunc = [&](const vector_t &u, const double h) {
@@ -135,24 +127,15 @@ void gaussSeidelBenchmark() {
         return gaussSeidelParallel(u, f, h, iter_count_par, def_change_threshold, def_max_iterations); };
 
     for (int n = n_min; n <= n_max; n*=2) {
-        std::cout << "n=" << n << "\n";
+        std::cout << n << ";";
         executeBenchmark(n, seqFunc, parFunc);
-        std::cout << "Iterationen: Seq=" << iter_count_seq << ", Par=" << iter_count_par << "\n\n";
+        std::cout << ";" << iter_count_seq << ";" << iter_count_par << "\n";
     }
 }
 
 void mehrgitterBenchmark() {
     std::cout << "Starte Mehrgitter Benchmark\n";
-
-    // Helfer: Liste schick darstellen.
-    auto _s = [](const std::vector<std::pair<std::string, int>> &l) {
-        std::string res = "[";
-        if (l.size() > 0)
-            res += l[0].first + ":" + std::to_string(l[0].second);
-        for (std::size_t i = 1; i < l.size(); ++i)
-            res += ", " + l[i].first + ":" + std::to_string(l[i].second);
-        return res + "]";
-    };
+    std::cout << "n;alpha;z1;z2;hMaxFactor;seqTime;parTime;speedup;meanError;maxError\n";
 
     for (int n = n_min; n <= n_max; n*=2) {
         for (int alpha = alpha_min; alpha <= alpha_max; alpha++) {
@@ -164,9 +147,9 @@ void mehrgitterBenchmark() {
                             return mehrgitter(u, f, z1, z2, h, h*h_max_factor, alpha, iter_count_seq, def_change_threshold, def_max_iterations); };
                         auto parFunc = [&](const vector_t &u, const double h) {
                             return mehrgitterParallel(u, f, z1, z2, h, h*h_max_factor, alpha, iter_count_par, def_change_threshold, def_max_iterations); };
-                        std::cout << "n=" << n << ", alpha=" << alpha << ", z1=" << z1 << ", z2=" << z2 << ", h_max_factor=" << h_max_factor << "\n";
+                        std::cout << n << ";" << alpha << ";" << z1 << ";" << z2 << ";" << h_max_factor;
                         executeBenchmark(n, seqFunc, parFunc);
-                        std::cout << "Iterationen: " << _s(iter_count_seq) << "\n\n";
+                        std::cout << "\n";
                     }
                 }
             }
