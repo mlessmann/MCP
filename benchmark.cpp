@@ -163,7 +163,7 @@ void mehrgitterBenchmark() {
                         std::vector<std::pair<std::string, int>> iter_count_seq, iter_count_par;
                         auto seqFunc = [&](const vector_t &u, const double h) {
                             // Debug: Dump start vector
-                            dump("startvector", u);
+                            dump("Startvektor", u);
                             return mehrgitter(u, f, z1, z2, h, h*h_max_factor, alpha, iter_count_seq, def_change_threshold, def_max_iterations); };
                         auto parFunc = [&](const vector_t &u, const double h) {
                             return mehrgitterParallel(u, f, z1, z2, h, h*h_max_factor, alpha, iter_count_par, def_change_threshold, def_max_iterations); };

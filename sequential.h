@@ -106,18 +106,22 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
                     const int        max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
 {
     if (h >= h_max) {
-        iteration_count.emplace_back("Main", 0);
-        auto res = gaussSeidel(u, f, h, iteration_count.back().second,
-                               change_threshold, max_iterations);
         // Debug
-        dump("mehrgitter", res);
+        dump("Mehrgitter Main, vor Gauß-Seidel", u);
+        iteration_count.emplace_back("Main", 0);
+        u = gaussSeidel(u, f, h, iteration_count.back().second,
+                        change_threshold, max_iterations);
+        // Debug
+        dump("Mehrgitter Main, nach Gauß-Seidel", u);
         return res;
     }
 
+    // Debug
+    dump("Mehrgitter Down, vor Gauß-Seidel", u);
     iteration_count.emplace_back("Down", 0);
     auto vh = gaussSeidel(u, f, h, iteration_count.back().second, change_threshold, z1);
     // Debug
-    dump("mehrgitter", vh);
+    dump("Mehrgitter Down, nach Gauß-Seidel", vh);
     const int n_new = (u.size() - 1) / 2;
     vector_t v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
@@ -144,9 +148,11 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
         }
     }
 
+    // Debug
+    dump("Mehrgitter Up, vor Gauß-Seidel", vh);
     iteration_count.emplace_back("Up", 0);
     vh = gaussSeidel(vh, f, h, iteration_count.back().second, change_threshold, z2);
     // Debug
-    dump("mehrgitter", vh);
+    dump("Mehrgitter Up, nach Gauß-Seidel", vh);
     return vh;
 }
