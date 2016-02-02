@@ -40,7 +40,7 @@ vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
     return u;
 }
 
-// Gauß-Seidel Verfahren
+// Gauss-Seidel Verfahren
 template <typename Func>
 vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
                      Func         f,                // Eingabefunktion
@@ -82,7 +82,7 @@ void dump(const std::string &desc, const vector_t &v) {
     while (count_str.size() < 3)
         count_str = "0" + count_str;
 
-    std::ofstream fout(count_str + "_" + desc + ".matrix");
+    std::ofstream fout(count_str + " - " + desc + ".matrix");
     for (std::size_t i = 0; i < v.size(); ++i) {
         for (std::size_t j = 0; j < v.size(); ++j) {
             if (j != 0)
@@ -107,21 +107,21 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
 {
     if (h >= h_max) {
         // Debug
-        dump("Mehrgitter Main, vor Gauß-Seidel", u);
+        dump("Mehrgitter Main, vor Gauss-Seidel", u);
         iteration_count.emplace_back("Main", 0);
         u = gaussSeidel(u, f, h, iteration_count.back().second,
                         change_threshold, max_iterations);
         // Debug
-        dump("Mehrgitter Main, nach Gauß-Seidel", u);
-        return res;
+        dump("Mehrgitter Main, nach Gauss-Seidel", u);
+        return u;
     }
 
     // Debug
-    dump("Mehrgitter Down, vor Gauß-Seidel", u);
+    dump("Mehrgitter Down, vor Gauss-Seidel", u);
     iteration_count.emplace_back("Down", 0);
     auto vh = gaussSeidel(u, f, h, iteration_count.back().second, change_threshold, z1);
     // Debug
-    dump("Mehrgitter Down, nach Gauß-Seidel", vh);
+    dump("Mehrgitter Down, nach Gauss-Seidel", vh);
     const int n_new = (u.size() - 1) / 2;
     vector_t v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
@@ -149,10 +149,10 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
     }
 
     // Debug
-    dump("Mehrgitter Up, vor Gauß-Seidel", vh);
+    dump("Mehrgitter Up, vor Gauss-Seidel", vh);
     iteration_count.emplace_back("Up", 0);
     vh = gaussSeidel(vh, f, h, iteration_count.back().second, change_threshold, z2);
     // Debug
-    dump("Mehrgitter Up, nach Gauß-Seidel", vh);
+    dump("Mehrgitter Up, nach Gauss-Seidel", vh);
     return vh;
 }

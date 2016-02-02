@@ -82,7 +82,7 @@ bool operator==(const vector_t &v1, const vector_t &v2) {
 template <typename SeqFunc, typename ParFunc>
 void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     std::default_random_engine rand(seed);
-    std::uniform_real_distribution<double> dist(0, 1); // Eingeschränkte Zufälligkeit
+    std::uniform_real_distribution<double> dist(-10, 10); // Eingeschränkte Zufälligkeit
     auto startVector = createVector(n, [&](double, double) {return dist(rand);});
     auto anaResult = createVector(n, u);
     double h = 1.0 / (n + 1);
@@ -162,8 +162,6 @@ void mehrgitterBenchmark() {
                     for (int h_max_factor = h_max_factor_min; h_max_factor <= h_max_factor_max; h_max_factor*=2) {
                         std::vector<std::pair<std::string, int>> iter_count_seq, iter_count_par;
                         auto seqFunc = [&](const vector_t &u, const double h) {
-                            // Debug: Dump start vector
-                            dump("Startvektor", u);
                             return mehrgitter(u, f, z1, z2, h, h*h_max_factor, alpha, iter_count_seq, def_change_threshold, def_max_iterations); };
                         auto parFunc = [&](const vector_t &u, const double h) {
                             return mehrgitterParallel(u, f, z1, z2, h, h*h_max_factor, alpha, iter_count_par, def_change_threshold, def_max_iterations); };
