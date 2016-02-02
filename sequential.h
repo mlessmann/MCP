@@ -92,7 +92,7 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
     }
 
     iteration_count.emplace_back("Down", 0);
-    auto vh = gaussSeidel(u, f, h, iteration_count.back().second, change_threshold, z1);
+    auto vh = gaussSeidel(u, f, h, iteration_count.back().second, 0, z1);
     const int n_new = (u.size() - 1) / 2;
     vector_t v2h(n_new + 2, std::vector<double>(n_new + 2, 0.0));
 
@@ -120,5 +120,5 @@ vector_t mehrgitter(vector_t         u,  // Eingabevektor mit Rand
     }
 
     iteration_count.emplace_back("Up", 0);
-    return gaussSeidel(vh, f, h, iteration_count.back().second, change_threshold, z2);
+    return gaussSeidel(vh, f, h, iteration_count.back().second, 0, z2);
 }
