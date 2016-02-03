@@ -168,8 +168,10 @@ void mehrgitterBenchmark() {
                                 u, f, z1, z2, h, h * h_max_factor, alpha,
                                 iter_count_seq, def_change_threshold, def_max_iterations);
                             iter_count_seq.emplace_back("Finish", 0);
-                            return gaussSeidel(startVec, f, h,
+                            auto result = gaussSeidel(startVec, f, h,
                                 iter_count_seq.back().second, def_change_threshold, def_max_iterations);
+                            dump("Ergebnis, nach Gauss-Seidel", result);
+                            return result;
                         };
                         auto parFunc = [&](const vector_t &u, const double h) {
                             auto startVec = mehrgitterParallel(
