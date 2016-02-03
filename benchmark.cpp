@@ -1,5 +1,6 @@
 #include "parallel.h"
 #include "sequential.h"
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <functional>
 #include <iomanip>
@@ -26,6 +27,7 @@ static const int    seed                 = 0;
 // Eingabefunktion
 double f(double x, double y) {
     return 32 * (x * (1 - x) + y * (1 - y));
+    //return 32 * std::sin(5 * x * M_PI) * std::sin(15 * y * M_PI);
 }
 
 // Analytische Lösung
