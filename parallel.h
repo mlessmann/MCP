@@ -228,15 +228,11 @@ vector_t mehrgitterParallel(vector_t         u,  // Eingabevektor mit Rand
     #pragma omp parallel for schedule(static) collapse(2)
     for (int i = 0; i < n; i+=2) {
         for (int j = 0; j < n; j+=2) {
-            int i1 = i/2+1;
-            int i2 = i >= n-2 ? i1 : i1 + 1; // Betrachte nicht den Rand
-            int j1 = j/2+1;
-            int j2 = j >= n-2 ? j1 : j1 + 1;
-            vh[i+1][j+1] = v2h[i1][j1];
-            vh[i+1][j+2] = 0.5 * (v2h[i1][j1] + v2h[i1][j2]);
-            vh[i+2][j+1] = 0.5 * (v2h[i1][j1] + v2h[i2][j1]);
-            vh[i+2][j+2] = 0.25 * (v2h[i1][j1] + v2h[i1][j2] +
-                                   v2h[i2][j1] + v2h[i2][j2]);
+            vh[i+1][j+1] = v2h[i/2+1][j/2+1];
+            vh[i+1][j+2] = 0.5 * (v2h[i/2+1][j/2+1] + v2h[i/2+1][j/2+2]);
+            vh[i+2][j+1] = 0.5 * (v2h[i/2+1][j/2+1] + v2h[i/2+2][j/2+1]);
+            vh[i+2][j+2] = 0.25 * (v2h[i/2+1][j/2+1] + v2h[i/2+1][j/2+2] +
+                                   v2h[i/2+2][j/2+1] + v2h[i/2+2][j/2+2]);
         }
     }
 
