@@ -1,6 +1,8 @@
 #include "parallel.h"
 #include "sequential.h"
 #include <cmath>
+#include <cstdio>
+#include <fstream>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -79,7 +81,7 @@ bool operator==(const vector_t &v1, const vector_t &v2) {
 }
 
 template <typename SeqFunc, typename ParFunc>
-void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
+void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc, std::ofstream& file) {
     auto startVector = createVector(n, [&](double, double) {return 0;});
     auto anaResult = createVector(n, u);
     double h = 1.0 / (n + 1);
@@ -95,13 +97,18 @@ void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     vector_t parResult = parFunc(startVector, h);
     double parTime = getWallTime() - time;
 
-    std::cout << seqTime << ";" << parTime << ";" << seqTime / parTime << ";"
-              << seqMeanError << ";" << seqMaxError;
+    file << seqTime << ";" << parTime << ";" << seqTime / parTime << ";"
+         << seqMeanError << ";" << seqMaxError;
 }
 
 void jakobiBenchmark() {
+    const auto filename = "doc/benchmark-jakobi.csv";
+    std::ofstream file;
+
     std::cout << "Starte Jakobi Benchmark\n";
-    std::cout << "n;seqTime;parTime;speedup;meanError;maxError;iterSeq;iterPar\n";
+    std::remove(filename);
+    file.open(filename);
+    file << "n;seqTime;parTime;speedup;meanError;maxError;iterSeq;iterPar\n";
 
     int iter_count_seq, iter_count_par;
     auto seqFunc = [&](const vector_t &u, const double h) {
@@ -110,15 +117,22 @@ void jakobiBenchmark() {
         return jakobiParallel(u, f, h, iter_count_par, def_change_threshold, def_max_iterations); };
 
     for (int n = n_min; n <= n_max; n*=2) {
-        std::cout << n << ";";
-        executeBenchmark(n, seqFunc, parFunc);
-        std::cout << ";" << iter_count_seq << ";" << iter_count_par << "\n";
+        file << n << ";";
+        executeBenchmark(n, seqFunc, parFunc, file);
+        file << ";" << iter_count_seq << ";" << iter_count_par << "\n";
     }
+
+    file.close();
 }
 
 void gaussSeidelBenchmark() {
+    const auto filename = "doc/benchmark-gauss-seidel.csv";
+    std::ofstream file;
+
     std::cout << "Starte Gauss-Seidel Benchmark\n";
-    std::cout << "n;seqTime;parTime;speedup;meanError;maxError;iterSeq;iterPar\n";
+    std::remove(filename);
+    file.open(filename);
+    file << "n;seqTime;parTime;speedup;meanError;maxError;iterSeq;iterPar\n";
 
     int iter_count_seq, iter_count_par;
     auto seqFunc = [&](const vector_t &u, const double h) {
@@ -127,15 +141,22 @@ void gaussSeidelBenchmark() {
         return gaussSeidelParallel(u, f, h, iter_count_par, def_change_threshold, def_max_iterations); };
 
     for (int n = n_min; n <= n_max; n*=2) {
-        std::cout << n << ";";
-        executeBenchmark(n, seqFunc, parFunc);
-        std::cout << ";" << iter_count_seq << ";" << iter_count_par << "\n";
+        file << n << ";";
+        executeBenchmark(n, seqFunc, parFunc, file);
+        file << ";" << iter_count_seq << ";" << iter_count_par << "\n";
     }
+
+    file.close();
 }
 
 void mehrgitterBenchmark() {
+    const auto filename = "doc/benchmark-mehrgitter.csv";
+    std::ofstream file;
+
     std::cout << "Starte Mehrgitter Benchmark\n";
-    std::cout << "n;alpha;z1;z2;hMaxFactor;seqTime;parTime;speedup;meanError;maxError\n";
+    std::remove(filename);
+    file.open(filename);
+    file << "n;alpha;z1;z2;hMaxFactor;seqTime;parTime;speedup;meanError;maxError\n";
 
     for (int n = n_min; n <= n_max; n*=2) {
         for (int alpha = alpha_min; alpha <= alpha_max; alpha++) {
@@ -147,14 +168,17 @@ void mehrgitterBenchmark() {
                             return mehrgitter(u, f, z1, z2, h, h*h_max_factor, alpha, iter_count_seq, def_change_threshold, def_max_iterations); };
                         auto parFunc = [&](const vector_t &u, const double h) {
                             return mehrgitterParallel(u, f, z1, z2, h, h*h_max_factor, alpha, iter_count_par, def_change_threshold, def_max_iterations); };
-                        std::cout << n << ";" << alpha << ";" << z1 << ";" << z2 << ";" << h_max_factor;
-                        executeBenchmark(n, seqFunc, parFunc);
-                        std::cout << "\n";
+                        file << n << ";" << alpha << ";" << z1 << ";" << z2 << ";" << h_max_factor;
+                        executeBenchmark(n, seqFunc, parFunc, file);
+                        file << "\n";
                     }
                 }
             }
         }
+        std::cout << "Done with n=" << n << "\n";
     }
+
+    file.close();
 }
 
 int main(int argc, char** argv) {
