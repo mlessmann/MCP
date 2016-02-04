@@ -26,7 +26,7 @@ vector_t jakobiParallel(vector_t     u,                // Eingabevector, mit Ran
         std::swap(u, u_old);
         running = false;
 
-        #pragma omp parallel for reduction(||:running) collapse(2)
+        #pragma omp parallel for schedule(static) reduction(||:running) collapse(2)
         for (int i = 1; i < size; ++i) {
             for (int j = 1; j < size; ++j) {
                 u[i][j] = (u_old[i][j - 1] + u_old[i - 1][j]
@@ -57,10 +57,10 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
     // Vorlauf. Die erste halbe Iteration wird vorgezogen, damit anschließend
     // gleichmäßig parallel gerechnet werden kann.
     for (int col = 0; col < size; ++col) {
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(static)
         for (int row = 0; row <= col; ++row) {
-            const int i = 1 + col - row;
-            const int j = 1 + row;
+            const int i = 1 + row;       // row
+            const int j = 1 + col - row; // col
 
             u[i][j] = (u[i][j - 1] + u[i - 1][j]
                      + u[i][j + 1] + u[i + 1][j]
@@ -95,12 +95,12 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
             running = false;
 
             for (int col = 0; col < size; ++col) {
-                #pragma omp parallel for reduction(||:running)
+                #pragma omp parallel for schedule(static) reduction(||:running)
                 for (int row = 0; row < size; ++row) {
-                    const int i = 1 + ((col - row + size) % size);
-                    const int j = 1 + row;
+                    const int i = 1 + row;                         // row
+                    const int j = 1 + ((col - row + size) % size); // col
 
-                    auto u_old = u[i][j];
+                    const auto u_old = u[i][j];
                     u[i][j] = (u[i][j - 1] + u[i - 1][j]
                              + u[i][j + 1] + u[i + 1][j]
                              + h * h * f(i * h, j * h)) * 0.25;
@@ -120,22 +120,20 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
             ++iteration_count;
             running = false;
 
-            // TODO: Die Dreiecke können hier auch anders, möglicherweise
-            // cacheeffizienter durchlaufen werden. Noch zu verbessern!
             for (int chunk_col = 0; chunk_col < size; chunk_col += chunk_size) {
                 // Achtung: Hier kein collapse() einfügen!
-                #pragma omp parallel for reduction(||:running)
+                #pragma omp parallel for schedule(static) reduction(||:running)
                 for (int chunk = 0; chunk < chunk_count; ++chunk) {
                     const int chunk_offset = chunk * chunk_size;
                     // Dreieck 1. Überspringe lange Kante, bzw. Diagonale,
                     // da diese bereits von Dreieck 2, bzw. vom Vorlauf
                     // erfasst wurde.
-                    for (int col = 0; col < chunk_size - 1; ++col) {
-                        for (int row = 1; row < chunk_size - col; ++row) {
-                            const int i = 1 + ((chunk_col - row - chunk_offset + size) % size);
-                            const int j = 1 + row + col + chunk_offset;
+                    for (int row = 1; row < chunk_size; ++row) {
+                        for (int col = -row; col < 0; ++col) {
+                            const int i = 1 + row + chunk_offset;                               // row
+                            const int j = 1 + ((col - chunk_offset + chunk_col + size) % size); // col
 
-                            auto u_old = u[i][j];
+                            const auto u_old = u[i][j];
                             u[i][j] = (u[i][j - 1] + u[i - 1][j]
                                      + u[i][j + 1] + u[i + 1][j]
                                      + h * h * f(i * h, j * h)) * 0.25;
@@ -147,16 +145,16 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
                 }
 
                 // Achtung: Hier kein collapse() einfügen!
-                #pragma omp parallel for reduction(||:running)
+                #pragma omp parallel for schedule(static) reduction(||:running)
                 for (int chunk = 0; chunk < chunk_count; ++chunk) {
                     const int chunk_offset = chunk * chunk_size;
                     // Dreieck 2
-                    for (int col = 0; col < chunk_size; ++col) {
-                        for (int row = 0; row <= col; ++row) {
-                            const int i = 1 + ((chunk_col + col - row - chunk_offset + size) % size);
-                            const int j = 1 + row + chunk_offset;
+                    for (int row = 0; row < chunk_size; ++row) {
+                        for (int col = 0; col < chunk_size - row; ++col) {
+                            const int i = 1 + row + chunk_offset; // row
+                            const int j = 1 + ((col - chunk_offset + chunk_col + size) % size); // col
 
-                            auto u_old = u[i][j];
+                            const auto u_old = u[i][j];
                             u[i][j] = (u[i][j - 1] + u[i - 1][j]
                                      + u[i][j + 1] + u[i + 1][j]
                                      + h * h * f(i * h, j * h)) * 0.25;
@@ -173,10 +171,10 @@ vector_t gaussSeidelParallel(vector_t     u,                // Eingabevector, mi
     // Nachlauf. Die letzte halbe Iteration wird noch nachgezogen, um das
     // Ergebnis identisch mit der sequenziellen Version zu halten.
     for (int col = 0; col < size - 1; ++col) {
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(static)
         for (int row = 1; row < size - col; ++row) {
-            const int i = 1 + size - row;
-            const int j = 1 + row + col;
+            const int i = 1 + row + col;  // row
+            const int j = 1 + size - row; // col
 
             u[i][j] = (u[i][j - 1] + u[i - 1][j]
                      + u[i][j + 1] + u[i + 1][j]
