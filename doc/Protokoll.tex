@@ -124,14 +124,38 @@ n    & alpha & Mean Error & Max Error \\
 2048 & 2     & 0,0111     & 0,0289 \\
 \hline
 \end{tabular}
-z1=4, z2=4, hMax = 16*h\\
+z1=z2=4, hMax = 16*h\\
 
 Ein höherer Alpha-Wert führt besonders bei großer Gitterfeinheit und wenig Iterationen von Gauss-Seidel zu deutlich geringeren Fehlern.
 
 \subsection*{e)}
-//TODO Tabelle mit n/time/speedup/efficiency für ein hMaxFactor, alpha=2
+\begin{tabular}{l|l|l|l|l}
+\hline
+n    & Seq Time & Par Time & Speedup & Efficiency \\
+\hline
+16   & 0,0004   & 0,0072   & 0,0567  & 0,0142 \\
+32   & 0,0016   & 0,0139   & 0,1124  & 0,0281 \\
+64   & 0,0067   & 0,0379   & 0,1765  & 0,0441 \\
+128  & 0,0350   & 0,1045   & 0,3352  & 0,0838 \\
+256  & 0,1422   & 0,1522   & 0,9338  & 0,2334 \\
+512  & 0,5698   & 0,3205   & 1,7780  & 0,4445 \\
+1024 & 2,3061   & 0,9857   & 2,3397  & 0,5849 \\
+2048 & 9,2382   & 3,6254   & 2,5482  & 0,6371 \\
+\hline
+\end{tabular}
+alpha=2, z1=z2=32, hMax = 8*h
 
 \subsection*{f)}
-//TODO Tabelle mit verfahren/time/speedup/error für n=2048
+\begin{tabular}{l|l|l|l|l|l|l}
+\hline
+Algorithm    & Seq Time & Par Time & Speedup & Efficiency & Mean Err & Max Err \\
+\hline
+Jakobi       & 33,9062  & 19,2902  & 1,7577  & 0,4394     & 0,4443   & 0,9990 \\
+Gauss-Seidel & 52,3843  & 19,5082  & 2,6853  & 0,6713     & 0,4436   & 0,9981 \\
+Mehrgitter   & 2,5800   & 1,3330   & 1,9354  & 0,4838     & 0,0111   & 0,0289 \\
+\hline
+\end{tabular}
+n=2048, 1000 Iterationen\\
+Mehrgitter: alpha=2, z1=z2=4, hMax=16*h
 
 \end{document}
