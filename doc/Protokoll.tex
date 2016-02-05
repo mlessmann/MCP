@@ -80,12 +80,53 @@ Joa, hier ist wohl noch was zu tun.
 Ein grobes Gitter führt zwangsläufig zu Undersampling. Gerade bei hochfrequenten Funktionen entstehen dadurch schwerwiegende Aliasingeffekte, die sich auch durch die Ausführung von Gauss-Seidel nicht verringern lassen, da die Informationen schlicht im Startvektor nicht enthalten sind. Deshalb sollte man zunächst auf feineren Gittern iterieren. Dadurch erstellt man einen Startvektor, der zwar dieselbe Feinheit hat, jedoch auch Informationen aus den hochfrequenten Teilen der Funktionen beinhaltet. Dieses Verfahren führt zur Glättung des Fehlers, der zwangsläufig durch Aliasing entsteht.
 
 \subsection*{b)}
-//TODO Tabelle mit z1/z2 Werten
+%\begin{table}[h]
+\begin{tabular}{l|l|l|l|l}
+\hline
+z1 & z2 & Time   & Mean Error & Max Error\\
+\hline
+4  & 4  & 0,0599 & 0,0324     & 0,0880   \\
+4  & 8  & 0,0634 & 0,0321     & 0,0877   \\
+4  & 16 & 0,0715 & 0,0314     & 0,0871   \\
+4  & 32 & 0,0876 & 0,0305     & 0,0859   \\
+8  & 4  & 0,0634 & 0,0323     & 0,0877   \\
+8  & 8  & 0,0674 & 0,0320     & 0,0874   \\
+8  & 16 & 0,0755 & 0,0313     & 0,0868   \\
+8  & 32 & 0,0946 & 0,0304     & 0,0856   \\
+16 & 4  & 0,0714 & 0,0321     & 0,0871   \\
+16 & 8  & 0,0755 & 0,0317     & 0,0868   \\
+16 & 16 & 0,0835 & 0,0311     & 0,0862   \\
+16 & 32 & 0,0997 & 0,0302     & 0,0850   \\
+32 & 4  & 0,0876 & 0,0317     & 0,0859   \\
+32 & 8  & 0,0916 & 0,0313     & 0,0857   \\
+32 & 16 & 0,0997 & 0,0307     & 0,0851   \\
+32 & 32 & 0,1159 & 0,0298     & 0,0839   \\
+\hline
+\end{tabular}
+%\end{table}
+n=256, hMax=h*4, alpha=1\\
+
+%\par\medskip
+Offensichtlich hängt der Fehler nur wenig von z2 und fast gar nicht von z1 ab.
 
 \subsection*{c)}
-//TODO Tabelle mit alpha/mean error Werten
+\begin{tabular}{l|l|l|l}
+\hline
+n    & alpha & Mean Error & Max Error \\
+\hline
+256  & 1     & 0,0771     & 0,1962 \\
+256  & 2     & 0,0771     & 0,1962 \\
+512  & 1     & 0,0431     & 0,1052 \\
+512  & 2     & 0,0431     & 0,1053 \\
+1024 & 1     & 0,0321     & 0,0853 \\
+1024 & 2     & 0,0222     & 0,0548 \\
+2048 & 1     & 0,2341     & 0,5783 \\
+2048 & 2     & 0,0111     & 0,0289 \\
+\hline
+\end{tabular}
+z1=4, z2=4, hMax = 16*h\\
 
-Ein höherer Alpha-Wert ist besonders dann sinnvoll, wenn der Algorithmus zur Bestimmung einer exakten Lösung eher ungenau ist. Dies ist bei uns der Fall, wenn wir die Anzahl der Iterationen des Gauss-Seidel-Algorithmus beschränken.
+Ein höherer Alpha-Wert führt besonders bei großer Gitterfeinheit und wenig Iterationen von Gauss-Seidel zu deutlich geringeren Fehlern.
 
 \subsection*{e)}
 //TODO Tabelle mit n/time/speedup/efficiency für ein hMaxFactor, alpha=2
