@@ -73,4 +73,24 @@ Im Gegensatz zum Jakobi"=Verfahren sollte hier das GPU"=Potenzial geringer ausfa
 
 Joa, hier ist wohl noch was zu tun.
 
+
+\section{Mehrgitter-Verfahren}
+
+\subsection*{a)}
+Ein grobes Gitter führt zwangsläufig zu Undersampling. Gerade bei hochfrequenten Funktionen entstehen dadurch schwerwiegende Aliasingeffekte, die sich auch durch die Ausführung von Gauss-Seidel nicht verringern lassen, da die Informationen schlicht im Startvektor nicht enthalten sind. Deshalb sollte man zunächst auf feineren Gittern iterieren. Dadurch erstellt man einen Startvektor, der zwar dieselbe Feinheit hat, jedoch auch Informationen aus den hochfrequenten Teilen der Funktionen beinhaltet. Dieses Verfahren führt zur Glättung des Fehlers, der zwangsläufig durch Aliasing entsteht.
+
+\subsection*{b)}
+//TODO Tabelle mit z1/z2 Werten
+
+\subsection*{c)}
+//TODO Tabelle mit alpha/mean error Werten
+
+Ein höherer Alpha-Wert ist besonders dann sinnvoll, wenn der Algorithmus zur Bestimmung einer exakten Lösung eher ungenau ist. Dies ist bei uns der Fall, wenn wir die Anzahl der Iterationen des Gauss-Seidel-Algorithmus beschränken.
+
+\subsection*{e)}
+//TODO Tabelle mit n/time/speedup/efficiency für ein hMaxFactor, alpha=2
+
+\subsection*{f)}
+//TODO Tabelle mit verfahren/time/speedup/error für n=2048
+
 \end{document}
