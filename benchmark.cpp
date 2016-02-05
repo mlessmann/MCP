@@ -176,7 +176,7 @@ void mehrgitterBenchmark() {
                 }
             }
         }
-        std::cout << "Done with n=" << n << "\n";
+        std::cout << "Done with Mehrgitter, n=" << n << "\n";
     }
 }
 
