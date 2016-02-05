@@ -1,7 +1,6 @@
 #include "parallel.h"
 #include "sequential.h"
 #include <cmath>
-#include <cstdio>
 #include <fstream>
 #include <functional>
 #include <iomanip>
@@ -81,7 +80,7 @@ bool operator==(const vector_t &v1, const vector_t &v2) {
 }
 
 template <typename SeqFunc, typename ParFunc>
-void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc, std::ofstream& file) {
+void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc, std::ostream &file) {
     auto startVector = createVector(n, [&](double, double) {return 0;});
     auto anaResult = createVector(n, u);
     double h = 1.0 / (n + 1);
@@ -102,12 +101,9 @@ void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc, std::ofstream& fi
 }
 
 void jakobiBenchmark() {
-    const auto filename = "doc/benchmark-jakobi.csv";
-    std::ofstream file;
+    std::ofstream file("doc/benchmark-jakobi.csv", std::ios::trunc);
 
     std::cout << "Starte Jakobi Benchmark\n";
-    std::remove(filename);
-    file.open(filename);
     file << "n;seqTime;parTime;speedup;meanError;maxError;iterSeq;iterPar\n";
 
     int iter_count_seq, iter_count_par;
@@ -121,17 +117,12 @@ void jakobiBenchmark() {
         executeBenchmark(n, seqFunc, parFunc, file);
         file << ";" << iter_count_seq << ";" << iter_count_par << "\n";
     }
-
-    file.close();
 }
 
 void gaussSeidelBenchmark() {
-    const auto filename = "doc/benchmark-gauss-seidel.csv";
-    std::ofstream file;
+    std::ofstream file("doc/benchmark-gauss-seidel.csv", std::ios::trunc);
 
     std::cout << "Starte Gauss-Seidel Benchmark\n";
-    std::remove(filename);
-    file.open(filename);
     file << "n;seqTime;parTime;speedup;meanError;maxError;iterSeq;iterPar\n";
 
     int iter_count_seq, iter_count_par;
@@ -145,17 +136,12 @@ void gaussSeidelBenchmark() {
         executeBenchmark(n, seqFunc, parFunc, file);
         file << ";" << iter_count_seq << ";" << iter_count_par << "\n";
     }
-
-    file.close();
 }
 
 void mehrgitterBenchmark() {
-    const auto filename = "doc/benchmark-mehrgitter.csv";
-    std::ofstream file;
+    std::ofstream file("doc/benchmark-mehrgitter.csv", std::ios::trunc);
 
     std::cout << "Starte Mehrgitter Benchmark\n";
-    std::remove(filename);
-    file.open(filename);
     file << "n;alpha;z1;z2;hMaxFactor;seqTime;parTime;speedup;meanError;maxError\n";
 
     for (int n = n_min; n <= n_max; n*=2) {
@@ -183,8 +169,6 @@ void mehrgitterBenchmark() {
         }
         std::cout << "Done with n=" << n << "\n";
     }
-
-    file.close();
 }
 
 int main(int argc, char** argv) {
