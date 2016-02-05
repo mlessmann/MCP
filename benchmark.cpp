@@ -160,7 +160,7 @@ void mehrgitterBenchmark() {
                         };
                         auto parFunc = [&](const vector_t &u, const double h) {
                             return mehrgitterParallel(u, f, z1, z2, h, h*h_max_factor, alpha, iter_count_par, def_change_threshold, def_max_iterations); };
-                        file << n << ";" << alpha << ";" << z1 << ";" << z2 << ";" << h_max_factor;
+                        file << n << ";" << alpha << ";" << z1 << ";" << z2 << ";" << h_max_factor << ";";
                         executeBenchmark(n, seqFunc, parFunc, file);
                         file << "\n";
                     }
