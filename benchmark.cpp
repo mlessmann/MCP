@@ -1,12 +1,12 @@
 #include "parallel.h"
 #include "sequential.h"
+#include <chrono>
 #include <cmath>
 #include <functional>
 #include <iomanip>
 #include <iostream>
 #include <random>
 #include <stdexcept>
-#include <sys/time.h>
 
 // Grenzwerte für Benchmarkläufe
 static const int    n_min                = 128;
@@ -32,12 +32,6 @@ double f(double x, double y) {
 double u(double x, double y) {
     return 16 * x * (1 - x) * y * (1 - y);
 };
-
-double getWallTime() {
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    return (double)time.tv_sec + (double)time.tv_usec * .000001;
-}
 
 // Erzeugt einen "Vector", wie für Jakobi, usw. benötigt.
 // Der Vector wird mit der übergebenen Funktion f initialisiert.
@@ -81,29 +75,30 @@ bool operator==(const vector_t &v1, const vector_t &v2) {
 
 template <typename SeqFunc, typename ParFunc>
 void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
+    using namespace std::chrono;
     std::default_random_engine rand(seed);
     std::uniform_real_distribution<double> dist(-10, 10); // Eingeschränkte Zufälligkeit
     auto startVector = createVector(n, [&](double, double) {return dist(rand);});
     auto anaResult = createVector(n, u);
     double h = 1.0 / (n + 1);
 
-    double time = getWallTime();
+    auto time = high_resolution_clock::now();
     vector_t seqResult = seqFunc(startVector, h);
-    double seqTime = getWallTime() - time;
+    auto seqTime = high_resolution_clock::now() - time;
 
     double seqMeanError = computeMeanError(anaResult, seqResult);
     double seqMaxError = computeMaximumError(anaResult, seqResult);
-    std::cout << "Sequentiell: " << seqTime
-              << "sek, Mittlerer Fehler: " << seqMeanError
+    std::cout << "Sequentiell: " << duration_cast<duration<double>>(seqTime).count()
+              << " sek, Mittlerer Fehler: " << seqMeanError
               << ", Maximaler Fehler: " << seqMaxError << "\n";
 
-    time = getWallTime();
+    time = std::chrono::high_resolution_clock::now();
     vector_t parResult = parFunc(startVector, h);
-    double parTime = getWallTime() - time;
+    auto parTime = std::chrono::high_resolution_clock::now() - time;
 
     double parMeanError = computeMeanError(seqResult, parResult);
-    std::cout << "Parallel: " << parTime
-              << "sek, Speedup: " << seqTime / parTime
+    std::cout << "Parallel: " << duration_cast<duration<double>>(parTime).count()
+              << " sek, Speedup: " << seqTime / parTime
               << ", Mittlerer Fehler zu Seq: " << parMeanError <<  "\n";
 
     if (seqResult != parResult)
