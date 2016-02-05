@@ -7,18 +7,20 @@
 typedef std::vector<std::vector<double>> vector_t;
 
 // Jakobi Verfahren
-template <typename Func>
+template <typename Func, typename Callback>
 vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
                 Func         f,                // Eingabefunktion
                 const double h,                // Feinheit des Gitters
                 int          &iteration_count, // Out-Variable (profiling)
                 const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
-                const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
+                const int    max_iterations,   // Abbruch, wenn Anzahl der Iterationen erreicht
+                Callback     callback)
 {
     iteration_count = 0;
     auto u_old = u; // Kopie
     bool running = true;
     const int size = u.size() - 1;
+    callback(iteration_count, u);
 
     while (running && iteration_count < max_iterations) {
         ++iteration_count;
@@ -35,23 +37,27 @@ vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
                 running = running || std::abs(u[i][j] - u_old[i][j]) > change_threshold;
             }
         }
+
+        callback(iteration_count, u);
     }
 
     return u;
 }
 
 // Gauß-Seidel Verfahren
-template <typename Func>
+template <typename Func, typename Callback>
 vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
                      Func         f,                // Eingabefunktion
                      const double h,                // Feinheit des Gitters
                      int          &iteration_count, // Out-Variable (profiling)
                      const double change_threshold, // Abbruch, wenn Änderung kleiner Wert
-                     const int    max_iterations)   // Abbruch, wenn Anzahl der Iterationen erreicht
+                     const int    max_iterations,   // Abbruch, wenn Anzahl der Iterationen erreicht
+                     Callback     callback)
 {
     iteration_count = 0;
     bool running = true;
     const int size = u.size() - 1;
+    callback(iteration_count, u);
 
     while (running && iteration_count < max_iterations) {
         ++iteration_count;
@@ -68,6 +74,8 @@ vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
                 running = running || std::abs(u[i][j] - u_old) > change_threshold;
             }
         }
+
+        callback(iteration_count, u);
     }
 
     return u;

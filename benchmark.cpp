@@ -1,6 +1,7 @@
 #include "parallel.h"
 #include "sequential.h"
 #include <cmath>
+#include <fstream>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -10,7 +11,7 @@
 
 // Grenzwerte für Benchmarkläufe
 static const int    n_min                = 128;
-static const int    n_max                = 256;
+static const int    n_max                = 128;
 static const int    alpha_min            = 1;
 static const int    alpha_max            = 1;
 static const int    z1_min               = 32;
@@ -20,7 +21,7 @@ static const int    z2_max               = 32;
 static const int    h_max_factor_min     = 32;
 static const int    h_max_factor_max     = 32;
 static const double def_change_threshold = 1.0 / 10000;
-static const int    def_max_iterations   = 100000;
+static const int    def_max_iterations   = 10000;
 static const int    seed                 = 0;
 
 // Eingabefunktion
@@ -113,9 +114,17 @@ void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
 void jakobiBenchmark() {
     std::cout << "Starte Jakobi Benchmark\n";
 
+    std::ofstream file("doc/fehlerJakobi.csv", std::ios::trunc);
+    file << "Iteration, Max. Fehler\n";
+    auto callback = [&](int iteration, const vector_t &v) {
+        static const auto anaResult = createVector(v.size() - 2, u);
+        const auto max_err = computeMaximumError(v, anaResult);
+        file << iteration << ", " << max_err << "\n";
+    };
+
     int iter_count_seq, iter_count_par;
     auto seqFunc = [&](const vector_t &u, const double h) {
-        return jakobi(u, f, h, iter_count_seq, def_change_threshold, def_max_iterations); };
+        return jakobi(u, f, h, iter_count_seq, def_change_threshold, def_max_iterations, callback); };
     auto parFunc = [&](const vector_t &u, const double h) {
         return jakobiParallel(u, f, h, iter_count_par, def_change_threshold, def_max_iterations); };
 
@@ -129,9 +138,17 @@ void jakobiBenchmark() {
 void gaussSeidelBenchmark() {
     std::cout << "Starte Gauss-Seidel Benchmark\n";
 
+    std::ofstream file("doc/fehlerGaussSeidel.csv", std::ios::trunc);
+    file << "Iteration, Max. Fehler\n";
+    auto callback = [&](int iteration, const vector_t &v) {
+        static const auto anaResult = createVector(v.size() - 2, u);
+        const auto max_err = computeMaximumError(v, anaResult);
+        file << iteration << ", " << max_err << "\n";
+    };
+
     int iter_count_seq, iter_count_par;
     auto seqFunc = [&](const vector_t &u, const double h) {
-        return gaussSeidel(u, f, h, iter_count_seq, def_change_threshold, def_max_iterations); };
+        return gaussSeidel(u, f, h, iter_count_seq, def_change_threshold, def_max_iterations, callback); };
     auto parFunc = [&](const vector_t &u, const double h) {
         return gaussSeidelParallel(u, f, h, iter_count_par, def_change_threshold, def_max_iterations); };
 
@@ -142,6 +159,7 @@ void gaussSeidelBenchmark() {
     }
 }
 
+/*
 void mehrgitterBenchmark() {
     std::cout << "Starte Mehrgitter Benchmark\n";
 
@@ -180,11 +198,12 @@ void mehrgitterBenchmark() {
         }
     }
 }
+*/
 
 int main(int argc, char** argv) {
     std::cout << std::fixed << std::setprecision(4);
 
     jakobiBenchmark();
     gaussSeidelBenchmark();
-    mehrgitterBenchmark();
+    //mehrgitterBenchmark();
 }
