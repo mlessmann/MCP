@@ -5,4 +5,5 @@ set output "Mehrgitter.eps"
 
 # Plot
 set grid
+set zrange [0:1]
 #splot "*.matrix" matrix using 1:2:3 with lines
