@@ -35,7 +35,14 @@ Hier ist bestimmt \(h = \frac{1}{2^{l} + 1}\) gemeint. Zumindest macht diese Unt
     c) Messen Sie mit Hilfe der in a) angegebenen analytischen Lösung für beide Verfahren den maximalen Approximationsfehler mit Hilfe der euklidischen Norm in jedem Iterationsschritt und für ein gewähltes h und stellen Sie diesen graphisch dar.
 \end{quote}
 
-Euklidische Norm bedeutet hier wohl: einfacher Abstand. Noch nicht implementiert.
+Euklidische Norm bedeutet hier wohl: einfacher Abstand.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{fehler}
+    \caption{Maximaler Fehler nach dem jeweiligen Iterationsschritt.}
+    \label{fig:fehler}
+\end{figure}
 
 \begin{quote}
     d) Da hier innerhalb eines einzelnen Iterationsschritts keine Datenabhängigkeiten zu finden sind, lässt sich das Jakobi"=Verfahren durch einfaches Aufteilen der Berechnungen auf verscheidene Prozessoren und Kommunizieren eventueller Überlappungen parallelisieren. Entwerfen Sie eine parallele Version des Verfahrens (wahlweise mit OpenMP oder Cuda/OpenCL) und verifizieren Sie Ihre Ergebnisse gegenüber der seriellen Variante.
