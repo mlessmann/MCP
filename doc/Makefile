@@ -10,3 +10,4 @@ Protokoll.aux: Protokoll.tex
 clean:
 	rm -f Protokoll.aux
 	rm -f Protokoll.log
+	rm -f *-eps-converted-to.pdf

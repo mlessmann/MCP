@@ -1,5 +1,6 @@
 #include "parallel.h"
 #include "sequential.h"
+#include <chrono>
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <functional>
@@ -7,21 +8,20 @@
 #include <iostream>
 #include <random>
 #include <stdexcept>
-#include <sys/time.h>
 
 // Grenzwerte für Benchmarkläufe
 static const int    n_min                = 32;
 static const int    n_max                = 32;
 static const int    alpha_min            = 1;
 static const int    alpha_max            = 1;
-static const int    z1_min               = 8;
-static const int    z1_max               = 8;
-static const int    z2_min               = 8;
-static const int    z2_max               = 8;
-static const int    h_max_factor_min     = 4;
-static const int    h_max_factor_max     = 4;
-static const double def_change_threshold = 1.0 / 1000;
-static const int    def_max_iterations   = 1000;
+static const int    z1_min               = 32;
+static const int    z1_max               = 32;
+static const int    z2_min               = 32;
+static const int    z2_max               = 32;
+static const int    h_max_factor_min     = 32;
+static const int    h_max_factor_max     = 32;
+static const double def_change_threshold = 1.0 / 10000;
+static const int    def_max_iterations   = 100000;
 static const int    seed                 = 0;
 
 // Eingabefunktion
@@ -34,12 +34,6 @@ double f(double x, double y) {
 double u(double x, double y) {
     return 16 * x * (1 - x) * y * (1 - y);
 };
-
-double getWallTime() {
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    return (double)time.tv_sec + (double)time.tv_usec * .000001;
-}
 
 // Erzeugt einen "Vector", wie für Jakobi, usw. benötigt.
 // Der Vector wird mit der übergebenen Funktion f initialisiert.
@@ -83,29 +77,30 @@ bool operator==(const vector_t &v1, const vector_t &v2) {
 
 template <typename SeqFunc, typename ParFunc>
 void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
+    using namespace std::chrono;
     std::default_random_engine rand(seed);
     std::uniform_real_distribution<double> dist(0, 1); // Schön für die Grafik
     auto startVector = createVector(n, [&](double, double) {return dist(rand);});
     auto anaResult = createVector(n, u);
     double h = 1.0 / (n + 1);
 
-    double time = getWallTime();
+    auto time = high_resolution_clock::now();
     vector_t seqResult = seqFunc(startVector, h);
-    double seqTime = getWallTime() - time;
+    auto seqTime = high_resolution_clock::now() - time;
 
     double seqMeanError = computeMeanError(anaResult, seqResult);
     double seqMaxError = computeMaximumError(anaResult, seqResult);
-    std::cout << "Sequentiell: " << seqTime
-              << "sek, Mittlerer Fehler: " << seqMeanError
+    std::cout << "Sequentiell: " << duration_cast<duration<double>>(seqTime).count()
+              << " sek, Mittlerer Fehler: " << seqMeanError
               << ", Maximaler Fehler: " << seqMaxError << "\n";
 
-    time = getWallTime();
+    time = std::chrono::high_resolution_clock::now();
     vector_t parResult = parFunc(startVector, h);
-    double parTime = getWallTime() - time;
+    auto parTime = std::chrono::high_resolution_clock::now() - time;
 
     double parMeanError = computeMeanError(seqResult, parResult);
-    std::cout << "Parallel: " << parTime
-              << "sek, Speedup: " << seqTime / parTime
+    std::cout << "Parallel: " << duration_cast<duration<double>>(parTime).count()
+              << " sek, Speedup: " << seqTime / parTime
               << ", Mittlerer Fehler zu Seq: " << parMeanError <<  "\n";
 
     if (seqResult != parResult)
@@ -164,22 +159,14 @@ void mehrgitterBenchmark() {
                     for (int h_max_factor = h_max_factor_min; h_max_factor <= h_max_factor_max; h_max_factor*=2) {
                         std::vector<std::pair<std::string, int>> iter_count_seq, iter_count_par;
                         auto seqFunc = [&](const vector_t &u, const double h) {
-                            auto startVec = mehrgitter(
+                            return mehrgitter(
                                 u, f, z1, z2, h, h * h_max_factor, alpha,
                                 iter_count_seq, def_change_threshold, def_max_iterations);
-                            iter_count_seq.emplace_back("Finish", 0);
-                            auto result = gaussSeidel(startVec, f, h,
-                                iter_count_seq.back().second, def_change_threshold, def_max_iterations);
-                            dump("Ergebnis, nach Gauss-Seidel", result);
-                            return result;
                         };
                         auto parFunc = [&](const vector_t &u, const double h) {
-                            auto startVec = mehrgitterParallel(
+                            return mehrgitterParallel(
                                 u, f, z1, z2, h, h * h_max_factor, alpha,
                                 iter_count_par, def_change_threshold, def_max_iterations);
-                            iter_count_par.emplace_back("Finish", 0);
-                            return gaussSeidelParallel(startVec, f, h,
-                                iter_count_par.back().second, def_change_threshold, def_max_iterations);
                         };
                         std::cout << "n=" << n << ", alpha=" << alpha << ", z1=" << z1 << ", z2=" << z2 << ", h_max_factor=" << h_max_factor << "\n";
                         executeBenchmark(n, seqFunc, parFunc);
