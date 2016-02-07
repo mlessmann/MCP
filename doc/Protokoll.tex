@@ -33,7 +33,7 @@ Bei der Darstellung des maximalen Approximationsfehlers in Abbildung~\ref{fig:fe
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{fehler}
-    \caption{Maximaler Approximationsfehlers nach jedem Iterationsschritt.}
+    \caption{Maximaler Approximationsfehlers nach jedem Iterationsschritt. //TODO Welches n wurde hier verwendet?}
     \label{fig:fehler}
 \end{figure}
 
@@ -103,11 +103,10 @@ Abbildung~\ref{fig:gaussseideldreiecke} skizziert eine Verbesserung der Threadau
 
 Ein grobes Gitter führt zwangsläufig zu Undersampling. Gerade bei hochfrequenten Funktionen entstehen dadurch schwerwiegende Aliasingeffekte, die sich auch durch die Ausführung von Gauß"=Seidel nicht verringern lassen, da die Informationen schlicht im Startvektor nicht enthalten sind. Deshalb sollte man zunächst auf feineren Gittern iterieren. Dadurch erstellt man einen Startvektor, der zwar dieselbe Feinheit hat, jedoch auch Informationen aus den hochfrequenten Teilen der Funktionen beinhaltet. Dieses Verfahren führt zur Glättung des Fehlers, der zwangsläufig durch Aliasing entsteht.
 
-Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnisse und vergleichen Algorithmen und Parameter"=Konfigurationen miteinander.
-% TODO: Abschließender Satz zu "welches der vorgestellten Verfahren Sie für geeigneter halten um Gleichungssysteme großer Dimension zu lösen".
+Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnisse und vergleichen Algorithmen und Parameter"=Konfigurationen miteinander. Obwohl der Speedup nicht so hoch ist dominiert das Mehrgitterverfahren die beiden anderen Algorithmen für große Gitter sowohl was die Laufzeit als auch (zumindest wenn $alpha=2$ ist) was den Fehler angeht.
 
 %\subsection*{b)}
-\begin{table}[h]
+\begin{table}[ht]
     \centering
     \begin{tabular}{|r|r|r|r|r|} \hline
     & & Laufzeit in & \multicolumn{2}{c|}{Approx. Fehler} \\
@@ -134,7 +133,7 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
 \end{table}
 
 %\subsection*{c)}
-\begin{table}[h]
+\begin{table}[ht]
     \centering
     \begin{tabular}{|r|r|r|r|} \hline
     & & \multicolumn{2}{c|}{Approx. Fehler} \\
@@ -153,7 +152,7 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
 \end{table}
 
 %\subsection*{e)}
-\begin{table}[h]
+\begin{table}[ht]
     \centering
     \begin{tabular}{|r|r|r|r|r|} \hline
     & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & \\
@@ -172,7 +171,7 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
 \end{table}
 
 %\subsection*{f)}
-\begin{table}[h]
+\begin{table}[ht]
     \centering
     \begin{tabular}{|l|r|r|r|r|r|r|} \hline
     & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & & \multicolumn{2}{c|}{Approx. Fehler} \\
