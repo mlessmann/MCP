@@ -6,6 +6,26 @@
 
 typedef std::vector<std::vector<double>> vector_t;
 
+// Debug
+#include <fstream>
+
+void dump(const std::string &desc, const vector_t &v) {
+    static int count = 0;
+    std::string count_str = std::to_string(count++);
+    while (count_str.size() < 6)
+        count_str = "0" + count_str;
+
+    std::ofstream fout(count_str + " - " + desc + ".matrix");
+    for (std::size_t i = 0; i < v.size(); ++i) {
+        for (std::size_t j = 0; j < v.size(); ++j) {
+            if (j != 0)
+                fout << " ";
+            fout << v[i][j];
+        }
+        fout << "\n";
+    }
+}
+
 // Jakobi Verfahren
 template <typename Func>
 vector_t jakobi(vector_t     u,                // Eingabevector, mit Rand
@@ -53,6 +73,8 @@ vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
     bool running = true;
     const int size = u.size() - 1;
 
+    // Debug
+    dump("Gauss-Seidel, Iteration " + std::to_string(iteration_count), u);
     while (running && iteration_count < max_iterations) {
         ++iteration_count;
         running = false;
@@ -68,29 +90,11 @@ vector_t gaussSeidel(vector_t     u,                // Eingabevector, mit Rand
                 running = running || std::abs(u[i][j] - u_old) > change_threshold;
             }
         }
+        // Debug
+        dump("Gauss-Seidel, Iteration " + std::to_string(iteration_count), u);
     }
 
     return u;
-}
-
-// Debug
-#include <fstream>
-
-void dump(const std::string &desc, const vector_t &v) {
-    static int count = 0;
-    std::string count_str = std::to_string(count++);
-    while (count_str.size() < 3)
-        count_str = "0" + count_str;
-
-    std::ofstream fout(count_str + " - " + desc + ".matrix");
-    for (std::size_t i = 0; i < v.size(); ++i) {
-        for (std::size_t j = 0; j < v.size(); ++j) {
-            if (j != 0)
-                fout << " ";
-            fout << v[i][j];
-        }
-        fout << "\n";
-    }
 }
 
 template <typename Func>

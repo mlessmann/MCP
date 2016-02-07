@@ -1,7 +1,7 @@
 # Nach Datei
-set terminal postscript eps size 7,3.5 enhanced color \
+set terminal png size 1280,720 enhanced \
              font 'Helvetica,20' linewidth 2
-set output "Mehrgitter.eps"
+#set output "Mehrgitter.eps"
 
 # Plot
 set grid
