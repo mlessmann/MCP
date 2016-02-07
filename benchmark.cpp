@@ -162,14 +162,8 @@ void mehrgitterBenchmark() {
                                 iter_count_seq.back().second, def_change_threshold, def_max_iterations);
                         };
                         auto parFunc = [&](const vector_t &u, const double h) {
-                            auto startVec = mehrgitterParallel(
-                                u, f, z1, z2, h, h * h_max_factor, alpha,
-                                iter_count_par, def_change_threshold, def_max_iterations);
-                            iter_count_par.emplace_back("Finish", 0);
-                            return gaussSeidelParallel(startVec, f, h,
-                                iter_count_par.back().second, def_change_threshold, def_max_iterations);
-                        };
-                        file << n << ";" << alpha << ";" << z1 << ";" << z2 << ";" << h_max_factor;
+                            return mehrgitterParallel(u, f, z1, z2, h, h * h_max_factor, alpha, iter_count_par, def_change_threshold, def_max_iterations); };
+                        file << n << ";" << alpha << ";" << z1 << ";" << z2 << ";" << h_max_factor << ";";
                         executeBenchmark(n, seqFunc, parFunc, file);
                         file << "\n";
                     }
