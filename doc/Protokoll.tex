@@ -23,7 +23,7 @@
 
 %\begin{quote} c) Messen Sie mit Hilfe der in a) angegebenen analytischen Lösung für beide Verfahren den maximalen Approximationsfehler mit Hilfe der euklidischen Norm in jedem Iterationsschritt und für ein gewähltes h und stellen Sie diesen graphisch dar. \end{quote}
 
-Bei der Darstellung des maximalen Approximationsfehlers in Abbildung \ref{fig:fehler} ist die unterschiedlich schnelle Konvergenz des Jakobi"= und des Gauß"=Seidel"=Verfahrens deutlich erkennbar. Beide Verfahren näheren sich logarithmisch der analytisch Lösung an.
+Bei der Darstellung des maximalen Approximationsfehlers in Abbildung~\ref{fig:fehler} ist die unterschiedlich schnelle Konvergenz des Jakobi"= und des Gauß"=Seidel"=Verfahrens deutlich erkennbar. Beide Verfahren näheren sich logarithmisch der analytisch Lösung an.
 
 \begin{figure}
     \centering
@@ -45,7 +45,7 @@ Die Datenabhängigkeiten im Gauß"=Seidel"=Verfahren erschweren die Parallelisie
 %    \label{fig:gaussseidelskizze}
 %\end{figure}
 
-Abbildung \ref{fig:gaussseideldreiecke} skizziert eine Verbesserung der Threadauslastung, bei der voneinander abhängige Felder in Gruppen zusammengefasst werden, die wiederum unabhängig voneinander bearbeitet werden können. Dies verringert den Synchronisierungs"=Overhead beim Wechsel zum nächsten Datenfeld.
+Abbildung~\ref{fig:gaussseideldreiecke} skizziert eine Verbesserung der Threadauslastung, bei der voneinander abhängige Felder in Gruppen zusammengefasst werden, die wiederum unabhängig voneinander bearbeitet werden können. Dies verringert den Synchronisierungs"=Overhead beim Wechsel zum nächsten Datenfeld.
 
 \begin{figure}
     \centering
@@ -62,33 +62,34 @@ Abbildung \ref{fig:gaussseideldreiecke} skizziert eine Verbesserung der Threadau
 
 Ein grobes Gitter führt zwangsläufig zu Undersampling. Gerade bei hochfrequenten Funktionen entstehen dadurch schwerwiegende Aliasingeffekte, die sich auch durch die Ausführung von Gauss-Seidel nicht verringern lassen, da die Informationen schlicht im Startvektor nicht enthalten sind. Deshalb sollte man zunächst auf feineren Gittern iterieren. Dadurch erstellt man einen Startvektor, der zwar dieselbe Feinheit hat, jedoch auch Informationen aus den hochfrequenten Teilen der Funktionen beinhaltet. Dieses Verfahren führt zur Glättung des Fehlers, der zwangsläufig durch Aliasing entsteht.
 
+Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen \dots
+
 %\subsection*{b)}
 \begin{table}
     \centering
     \begin{tabular}{|r|r|r|r|r|} \hline
-    z1 & z2 & Time   & Mean Error & Max Error \\ \hline \hline
-    4  & 4  & 0,0599 & 0,0324     & 0,0880    \\
-    4  & 8  & 0,0634 & 0,0321     & 0,0877    \\
-    4  & 16 & 0,0715 & 0,0314     & 0,0871    \\
-    4  & 32 & 0,0876 & 0,0305     & 0,0859    \\ \hline
-    8  & 4  & 0,0634 & 0,0323     & 0,0877    \\
-    8  & 8  & 0,0674 & 0,0320     & 0,0874    \\
-    8  & 16 & 0,0755 & 0,0313     & 0,0868    \\
-    8  & 32 & 0,0946 & 0,0304     & 0,0856    \\ \hline
-    16 & 4  & 0,0714 & 0,0321     & 0,0871    \\
-    16 & 8  & 0,0755 & 0,0317     & 0,0868    \\
-    16 & 16 & 0,0835 & 0,0311     & 0,0862    \\
-    16 & 32 & 0,0997 & 0,0302     & 0,0850    \\ \hline
-    32 & 4  & 0,0876 & 0,0317     & 0,0859    \\
-    32 & 8  & 0,0916 & 0,0313     & 0,0857    \\
-    32 & 16 & 0,0997 & 0,0307     & 0,0851    \\
-    32 & 32 & 0,1159 & 0,0298     & 0,0839    \\ \hline
+    & & Laufzeit in & \multicolumn{2}{c|}{Approx. Fehler} \\
+    z1 & z2 & Sekunden & Mittel & Maximum \\ \hline \hline
+    4  & 4  & 0,0599   & 0,0324 & 0,0880  \\
+    4  & 8  & 0,0634   & 0,0321 & 0,0877  \\
+    4  & 16 & 0,0715   & 0,0314 & 0,0871  \\
+    4  & 32 & 0,0876   & 0,0305 & 0,0859  \\ \hline
+    8  & 4  & 0,0634   & 0,0323 & 0,0877  \\
+    8  & 8  & 0,0674   & 0,0320 & 0,0874  \\
+    8  & 16 & 0,0755   & 0,0313 & 0,0868  \\
+    8  & 32 & 0,0946   & 0,0304 & 0,0856  \\ \hline
+    16 & 4  & 0,0714   & 0,0321 & 0,0871  \\
+    16 & 8  & 0,0755   & 0,0317 & 0,0868  \\
+    16 & 16 & 0,0835   & 0,0311 & 0,0862  \\
+    16 & 32 & 0,0997   & 0,0302 & 0,0850  \\ \hline
+    32 & 4  & 0,0876   & 0,0317 & 0,0859  \\
+    32 & 8  & 0,0916   & 0,0313 & 0,0857  \\
+    32 & 16 & 0,0997   & 0,0307 & 0,0851  \\
+    32 & 32 & 0,1159   & 0,0298 & 0,0839  \\ \hline
     \end{tabular}
-    \caption{n=256, hMax=h*4, alpha=1}
+    \caption{Mehrgitter"=Verfahren: Offensichtlich hat \(z2\) einen deutlich größeren Einfluss auf den Fehler als \(z1\). Konfiguration: \(n=256, h_{max}=h*4, alpha=1\).}
+    \label{tab:b}
 \end{table}
-
-%\par\medskip
-Offensichtlich hängt der Fehler nur wenig von z2 und fast gar nicht von z1 ab.
 
 %\subsection*{c)}
 \begin{table}
@@ -105,10 +106,9 @@ Offensichtlich hängt der Fehler nur wenig von z2 und fast gar nicht von z1 ab.
     2048 & 1     & 0,2341 & 0,5783  \\
     2048 & 2     & 0,0111 & 0,0289  \\ \hline
     \end{tabular}
-    \caption{z1=z2=4, hMax = 16*h}
+    \caption{Ein höherer Alpha"=Wert führt besonders bei großer Gitterfeinheit und wenig Iterationen zu deutlich geringeren Fehlern. Konfiguration: \(z1=z2=4, h_{max} = 16*h\).}
+    \label{tab:c}
 \end{table}
-
-Ein höherer Alpha-Wert führt besonders bei großer Gitterfeinheit und wenig Iterationen von Gauss-Seidel zu deutlich geringeren Fehlern.
 
 %\subsection*{e)}
 \begin{table}
@@ -125,7 +125,8 @@ Ein höherer Alpha-Wert führt besonders bei großer Gitterfeinheit und wenig It
     1024 & 2,3061    & 0,9857    & 2,3397  & 0,5849    \\
     2048 & 9,2382    & 3,6254    & 2,5482  & 0,6371    \\ \hline
     \end{tabular}
-    \caption{alpha=2, z1=z2=32, hMax = 8*h}
+    \caption{Konfiguration: \(alpha=2, z1=z2=32, h_{max} = 8*h\).}
+    \label{tab:e}
 \end{table}
 
 %\subsection*{f)}
@@ -138,8 +139,8 @@ Ein höherer Alpha-Wert führt besonders bei großer Gitterfeinheit und wenig It
     Gauß-Seidel & 52,3843   & 19,5082   & 2,6853  & 0,6713    & 0,4436   & 0,9981  \\
     Mehrgitter  & 2,5800    & 1,3330    & 1,9354  & 0,4838    & 0,0111   & 0,0289  \\ \hline
     \end{tabular}
-    \caption{n=2048, 1000 Iterationen}
+    \caption{Konfiguration: \(n=2048\), 1000 Iterationen, Mehrgitter: \(alpha=2, z1=z2=4, h_{max}=16*h\).}
+    \label{tab:f}
 \end{table}
-Mehrgitter: alpha=2, z1=z2=4, hMax=16*h
 
 \end{document}
