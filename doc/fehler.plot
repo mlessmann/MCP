@@ -6,7 +6,7 @@ set xlabel "Anzahl der Iterationen"
 set ylabel "Maximaler Fehler"
 set logscale y 2
 
-set title "Maximaler Fehler nach Iteration"
+#set title "Maximaler Fehler nach Iteration"
 set output 'fehler.eps'
 plot "fehlerJakobi.csv"      using 1:2 with lines title "Jakobi", \
      "fehlerGaussSeidel.csv" using 1:2 with lines title "Gauss-Seidel"
