@@ -7,6 +7,7 @@
 
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{epstopdf}
 
 \begin{document}
 
@@ -34,6 +35,24 @@ Bei der Darstellung des maximalen Approximationsfehlers in Abbildung~\ref{fig:fe
 
 %\begin{quote} d) Da hier innerhalb eines einzelnen Iterationsschritts keine Datenabhängigkeiten zu finden sind, lässt sich das Jakobi"=Verfahren durch einfaches Aufteilen der Berechnungen auf verscheidene Prozessoren und Kommunizieren eventueller Überlappungen parallelisieren. Entwerfen Sie eine parallele Version des Verfahrens (wahlweise mit OpenMP oder Cuda/OpenCL) und verifizieren Sie Ihre Ergebnisse gegenüber der seriellen Variante. \end{quote}
 
+\begin{table}
+    \centering
+    \begin{tabular}{|r|r|r|r|r|r|r|} \hline
+    & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & & \multicolumn{2}{c|}{Approx. Fehler} \\
+    n    & Sequentiell & Parallel & Speedup & Effizienz & Mittel & Maximum \\ \hline \hline
+    16   & 0.0021      & 0.0057   & 0.3662  & 0.0915    & 0.0000 & 0.0000 \\
+    32   & 0.0081      & 0.0098   & 0.8358  & 0.2089    & 0.0049 & 0.0113 \\
+    64   & 0.0322      & 0.0214   & 1.5029  & 0.3757    & 0.1383 & 0.3306 \\
+    128  & 0.1297      & 0.0678   & 1.9130  & 0.4782    & 0.3283 & 0.7742 \\
+    256  & 0.5130      & 0.2585   & 1.9846  & 0.4961    & 0.4117 & 0.9403 \\
+    512  & 2.0717      & 0.9610   & 2.1557  & 0.5389    & 0.4365 & 0.9848 \\
+    1024 & 8.4935      & 4.2998   & 1.9752  & 0.4938    & 0.4428 & 0.9961 \\
+    2048 & 33.9062     & 19.2902  & 1.7576  & 0.4394    & 0.4442 & 0.9990 \\ \hline
+    \end{tabular}
+    \caption{Laufzeit, Speedup und Fehler des Jakobi Algorithmus in Abhängigkeit zur Feinheit des Gitters. Das Verfahren wurde auf 1000 Iterationen beschränkt.}
+    \label{tab:jakobi}
+\end{table}
+
 %\begin{quote} e) Im Gegensatz zum Jakobi"=Verfahren zeigt das Gauß"=Seidel"=Verfahren Datenabhängigkeiten innerhalb der einzelnen Iterationsschritte. Daher eignet sich eine naive Herangehensweise nicht, um dieses Verfahren ausreichend zu parallelisieren. Ihre Aufgabe ist es, eine sinnvolle Methodik zu entwickeln, mit welcher sich dieses Verfahren parallelisieren lässt. \end{quote}
 
 Die Datenabhängigkeiten im Gauß"=Seidel"=Verfahren erschweren die Parallelisierung. Zumindest alle Felder auf der Diagonalen des Ergebnisvektors lassen sich aber parallel verarbeiten. Von hier aus kann diese Diagonale dann Feld für Feld über den Ergebnisvektor verschoben werden, sodass bis zu \(\frac{1}{h} - 1\) Threads gleichzeitig arbeiten können.
@@ -53,6 +72,24 @@ Abbildung~\ref{fig:gaussseideldreiecke} skizziert eine Verbesserung der Threadau
     \caption{Verbesserung der Threadauslastung durch Bildung von Gruppen. Alle diagonal zueinander stehenden Dreiecke mit der gleichen Nummer könnne parallel verarbeitet werden.}
     \label{fig:gaussseideldreiecke}
 \end{figure}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|r|r|r|r|r|r|r|} \hline
+    & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & & \multicolumn{2}{c|}{Approx. Fehler} \\
+    n    & Sequentiell & Parallel & Speedup & Effizienz & Mittel & Maximum \\ \hline \hline
+    16   & 0.0031      & 0.0213   & 0.1458  & 0.0364    & 0.0000 & 0.0000 \\
+    32   & 0.0125      & 0.0251   & 0.4998  & 0.1249    & 0.0001 & 0.0001 \\
+    64   & 0.0502      & 0.0412   & 1.2206  & 0.3051    & 0.0430 & 0.1030 \\
+    128  & 0.2028      & 0.1010   & 2.0081  & 0.5020    & 0.2428 & 0.5846 \\
+    256  & 0.8070      & 0.3319   & 2.4310  & 0.6077    & 0.3799 & 0.8825 \\
+    512  & 3.2204      & 1.1896   & 2.7070  & 0.6767    & 0.4273 & 0.9698 \\
+    1024 & 13.0763     & 4.6782   & 2.7951  & 0.6987    & 0.4404 & 0.9923 \\
+    2048 & 52.3843     & 19.5082  & 2.6852  & 0.6713    & 0.4436 & 0.9980 \\ \hline
+    \end{tabular}
+    \caption{Laufzeit, Speedup und Fehler des Gauss"=Seidel" Algorithmus in Abhängigkeit zur Feinheit des Gitters. Das Verfahren wurde auf 1000 Iterationen beschränkt.}
+    \label{tab:gaussseidel}
+\end{table}
 
 %\begin{quote} f) Ermitteln Sie den Speedup für verschiedene Problemgrößen für beide Verfahren (\(h = \frac{1}{2^l} \text{ mit } l = 1, 2, \dots, 6, \dots\)). Beurteilen Sie damit auch die Qualität ihrer Parallelisierungen. \end{quote}
 
@@ -116,17 +153,17 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
     \centering
     \begin{tabular}{|r|r|r|r|r|} \hline
     & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & \\
-    n    & Seq. Zeit & Par. Zeit & Speedup & Effizienz \\ \hline \hline
-    16   & 0,0004    & 0,0072    & 0,0567  & 0,0142    \\
-    32   & 0,0016    & 0,0139    & 0,1124  & 0,0281    \\
-    64   & 0,0067    & 0,0379    & 0,1765  & 0,0441    \\
-    128  & 0,0350    & 0,1045    & 0,3352  & 0,0838    \\
-    256  & 0,1422    & 0,1522    & 0,9338  & 0,2334    \\
-    512  & 0,5698    & 0,3205    & 1,7780  & 0,4445    \\
-    1024 & 2,3061    & 0,9857    & 2,3397  & 0,5849    \\
-    2048 & 9,2382    & 3,6254    & 2,5482  & 0,6371    \\ \hline
+    n    & Sequentiell & Parallel & Speedup & Effizienz \\ \hline \hline
+    16   & 0,0004      & 0,0072   & 0,0567  & 0,0142    \\
+    32   & 0,0016      & 0,0139   & 0,1124  & 0,0281    \\
+    64   & 0,0067      & 0,0379   & 0,1765  & 0,0441    \\
+    128  & 0,0350      & 0,1045   & 0,3352  & 0,0838    \\
+    256  & 0,1422      & 0,1522   & 0,9338  & 0,2334    \\
+    512  & 0,5698      & 0,3205   & 1,7780  & 0,4445    \\
+    1024 & 2,3061      & 0,9857   & 2,3397  & 0,5849    \\
+    2048 & 9,2382      & 3,6254   & 2,5482  & 0,6371    \\ \hline
     \end{tabular}
-    \caption{Welche Ergebnisse sind das hier? Konfiguration: \(alpha=2, z1=z2=32, h_{max} = 8*h\).}
+    \caption{Skalierbarkeit des Mehrgitterverfahrens. Die Effizienz konvergiert gegen $2/3$. Konfiguration: \(alpha=2, z1=z2=32, h_{max} = 8*h\).}
     \label{tab:e}
 \end{table}
 
@@ -135,10 +172,10 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
     \centering
     \begin{tabular}{|l|r|r|r|r|r|r|} \hline
     & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & & \multicolumn{2}{c|}{Approx. Fehler} \\
-    Algorithmus & Seq. Zeit & Par. Zeit & Speedup & Effizienz & Mittel   & Maximum \\ \hline \hline
-    Jakobi      & 33,9062   & 19,2902   & 1,7577  & 0,4394    & 0,4443   & 0,9990  \\
-    Gauß-Seidel & 52,3843   & 19,5082   & 2,6853  & 0,6713    & 0,4436   & 0,9981  \\
-    Mehrgitter  & 2,5800    & 1,3330    & 1,9354  & 0,4838    & 0,0111   & 0,0289  \\ \hline
+    Algorithmus & Sequentiell & Parallel & Speedup & Effizienz & Mittel   & Maximum \\ \hline \hline
+    Jakobi      & 33,9062     & 19,2902  & 1,7577  & 0,4394    & 0,4443   & 0,9990  \\
+    Gauß-Seidel & 52,3843     & 19,5082  & 2,6853  & 0,6713    & 0,4436   & 0,9981  \\
+    Mehrgitter  & 2,5800      & 1,3330   & 1,9354  & 0,4838    & 0,0111   & 0,0289  \\ \hline
     \end{tabular}
     \caption{Bei einer Beschränkung auf 1000~Iterationen kommt die Stärke des Mehrgitter"=Verfahrens deutlich zum Vorschein. Konfiguration: \(n=2048, alpha=2, z1=z2=4, h_{max}=16*h\).}
     \label{tab:f}
