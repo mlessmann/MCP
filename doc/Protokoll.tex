@@ -60,9 +60,10 @@ Abbildung~\ref{fig:gaussseideldreiecke} skizziert eine Verbesserung der Threadau
 
 \emph{Warum ist es aus Sicht der Numerik nicht sinnvoll sofort auf einem groben Gitter zu beginnen, sondern zunächst einige Schritte auf einem feinen Gitter durchzuführen?}
 
-Ein grobes Gitter führt zwangsläufig zu Undersampling. Gerade bei hochfrequenten Funktionen entstehen dadurch schwerwiegende Aliasingeffekte, die sich auch durch die Ausführung von Gauss-Seidel nicht verringern lassen, da die Informationen schlicht im Startvektor nicht enthalten sind. Deshalb sollte man zunächst auf feineren Gittern iterieren. Dadurch erstellt man einen Startvektor, der zwar dieselbe Feinheit hat, jedoch auch Informationen aus den hochfrequenten Teilen der Funktionen beinhaltet. Dieses Verfahren führt zur Glättung des Fehlers, der zwangsläufig durch Aliasing entsteht.
+Ein grobes Gitter führt zwangsläufig zu Undersampling. Gerade bei hochfrequenten Funktionen entstehen dadurch schwerwiegende Aliasingeffekte, die sich auch durch die Ausführung von Gauß"=Seidel nicht verringern lassen, da die Informationen schlicht im Startvektor nicht enthalten sind. Deshalb sollte man zunächst auf feineren Gittern iterieren. Dadurch erstellt man einen Startvektor, der zwar dieselbe Feinheit hat, jedoch auch Informationen aus den hochfrequenten Teilen der Funktionen beinhaltet. Dieses Verfahren führt zur Glättung des Fehlers, der zwangsläufig durch Aliasing entsteht.
 
-Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen \dots
+Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnisse und vergleichen Algorithmen und Parameter"=Konfigurationen miteinander.
+% TODO: Abschließender Satz zu "welches der vorgestellten Verfahren Sie für geeigneter halten um Gleichungssysteme großer Dimension zu lösen".
 
 %\subsection*{b)}
 \begin{table}
@@ -125,7 +126,7 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen \dots
     1024 & 2,3061    & 0,9857    & 2,3397  & 0,5849    \\
     2048 & 9,2382    & 3,6254    & 2,5482  & 0,6371    \\ \hline
     \end{tabular}
-    \caption{Konfiguration: \(alpha=2, z1=z2=32, h_{max} = 8*h\).}
+    \caption{Welche Ergebnisse sind das hier? Konfiguration: \(alpha=2, z1=z2=32, h_{max} = 8*h\).}
     \label{tab:e}
 \end{table}
 
@@ -139,7 +140,7 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen \dots
     Gauß-Seidel & 52,3843   & 19,5082   & 2,6853  & 0,6713    & 0,4436   & 0,9981  \\
     Mehrgitter  & 2,5800    & 1,3330    & 1,9354  & 0,4838    & 0,0111   & 0,0289  \\ \hline
     \end{tabular}
-    \caption{Konfiguration: \(n=2048\), 1000 Iterationen, Mehrgitter: \(alpha=2, z1=z2=4, h_{max}=16*h\).}
+    \caption{Bei einer Beschränkung auf 1000~Iterationen kommt die Stärke des Mehrgitter"=Verfahrens deutlich zum Vorschein. Konfiguration: \(n=2048, alpha=2, z1=z2=4, h_{max}=16*h\).}
     \label{tab:f}
 \end{table}
 
