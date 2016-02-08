@@ -1,0 +1,11 @@
+Jakobi und Gauß-Seidel haben auch andere -> Nicht so viel zu erzählen.
+Gauß-Seidel Parallelisierung erklären
+    - Erst naiv mit Diagonalen
+    - Dann mit der Verbesserung durch Dreiecke.
+Parallelisierung / Speedup / ...
+
+Mehrgitter-Verfahren erklären
+    - Grafik zu Interpolation / Restriktion
+    - V / W Muster zeigen, Alpha-Wert
+    - Bilder / Animation zeigen
+Profiling Ergebnisse?
