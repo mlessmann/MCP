@@ -116,7 +116,7 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
     32 & 16 & 0,0997   & 0,0307 & 0,0851  \\
     32 & 32 & 0,1159   & 0,0298 & 0,0839  \\ \hline
     \end{tabular}
-    \caption{Mehrgitter"=Verfahren: Offensichtlich hat \(z2\) einen deutlich größeren Einfluss auf den Fehler als \(z1\). Konfiguration: \(n=256, h_{max}=h*4, alpha=1\).}
+    \caption{Mehrgitter"=Verfahren: Offensichtlich hat \(z2\) einen deutlich größeren Einfluss auf den Fehler als \(z1\). Konfiguration: \(n=256, h_{max}=4 \cdot h, alpha=1\).}
     \label{tab:b}
 \end{table}
 
@@ -135,7 +135,7 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
     2048 & 1     & 0,2341 & 0,5783  \\
     2048 & 2     & 0,0111 & 0,0289  \\ \hline
     \end{tabular}
-    \caption{Ein höherer Alpha"=Wert führt besonders bei großer Gitterfeinheit und wenig Iterationen zu deutlich geringeren Fehlern. Konfiguration: \(z1=z2=4, h_{max} = 16*h\).}
+    \caption{Ein höherer Alpha"=Wert führt besonders bei großer Gitterfeinheit und wenig Iterationen zu deutlich geringeren Fehlern. Konfiguration: \(z1=z2=4, h_{max} = 16 \cdot h\).}
     \label{tab:c}
 \end{table}
 
@@ -154,7 +154,7 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
     1024 & 2,3061      & 0,9857   & 2,3397  & 0,5849    \\
     2048 & 9,2382      & 3,6254   & 2,5482  & 0,6371    \\ \hline
     \end{tabular}
-    \caption{Skalierbarkeit des Mehrgitterverfahrens. Die Effizienz konvergiert gegen \(\frac{2}{3}\). Konfiguration: \(alpha=2, z1=z2=32, h_{max} = 8*h\).}
+    \caption{Skalierbarkeit des Mehrgitterverfahrens. Die Effizienz konvergiert gegen \(\frac{2}{3}\. Konfiguration: \(alpha=2, z1=z2=32, h_{max} = 8 \cdot h\).}
     \label{tab:e}
 \end{table}
 
@@ -168,7 +168,7 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
     Gauß-Seidel & 52,3843     & 19,5082  & 2,6853  & 0,6713    & 0,4436   & 0,9981  \\
     Mehrgitter  & 2,5800      & 1,3330   & 1,9354  & 0,4838    & 0,0111   & 0,0289  \\ \hline
     \end{tabular}
-    \caption{Bei einer Beschränkung auf 1000~Iterationen kommt die Stärke des Mehrgitter"=Verfahrens deutlich zum Vorschein. Konfiguration: \(n=2048, alpha=2, z1=z2=4, h_{max}=16*h\).}
+    \caption{Bei einer Beschränkung auf 1000~Iterationen kommt die Stärke des Mehrgitter"=Verfahrens deutlich zum Vorschein. Konfiguration: \(n=2048, alpha=2, z1=z2=4, h_{max}=16 \cdot h\).}
     \label{tab:f}
 \end{table}
 

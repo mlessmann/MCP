@@ -9,15 +9,15 @@
 #include <stdexcept>
 
 // Grenzwerte für Benchmarkläufe
-static const int    n_min                = 128;
-static const int    n_max                = 256;
+static const int    n_min                = 64;
+static const int    n_max                = 1024;
 static const int    alpha_min            = 1;
-static const int    alpha_max            = 1;
-static const int    z1_min               = 32;
-static const int    z1_max               = 32;
-static const int    z2_min               = 32;
-static const int    z2_max               = 32;
-static const int    h_max_factor_min     = 32;
+static const int    alpha_max            = 2;
+static const int    z1_min               = 4;
+static const int    z1_max               = 16;
+static const int    z2_min               = 4;
+static const int    z2_max               = 16;
+static const int    h_max_factor_min     = 8;
 static const int    h_max_factor_max     = 32;
 static const double def_change_threshold = 1.0 / 10000;
 static const int    def_max_iterations   = 100000;
