@@ -94,7 +94,7 @@ Ein grobes Gitter führt zwangsläufig zu Undersampling. Gerade bei hochfrequent
 Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnisse und vergleichen Algorithmen und Parameter"=Konfigurationen miteinander. Obwohl der Speedup nicht so hoch ist, dominiert das Mehrgitterverfahren die beiden anderen Algorithmen für große Gitter, sowohl was die Laufzeit, als auch (zumindest wenn \(alpha=2\) ist) was den Fehler angeht.
 
 %\subsection*{b)}
-\begin{table}[ht]
+\begin{table}
     \centering
     \begin{tabular}{|r|r|r|r|r|} \hline
     & & Laufzeit in & \multicolumn{2}{c|}{Approx. Fehler} \\
@@ -121,7 +121,7 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
 \end{table}
 
 %\subsection*{c)}
-\begin{table}[ht]
+\begin{table}
     \centering
     \begin{tabular}{|r|r|r|r|} \hline
     & & \multicolumn{2}{c|}{Approx. Fehler} \\
@@ -140,7 +140,7 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
 \end{table}
 
 %\subsection*{e)}
-\begin{table}[ht]
+\begin{table}
     \centering
     \begin{tabular}{|r|r|r|r|r|} \hline
     & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & \\
@@ -154,12 +154,12 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
     1024 & 2,3061      & 0,9857   & 2,3397  & 0,5849    \\
     2048 & 9,2382      & 3,6254   & 2,5482  & 0,6371    \\ \hline
     \end{tabular}
-    \caption{Skalierbarkeit des Mehrgitterverfahrens. Die Effizienz konvergiert gegen $2/3$. Konfiguration: \(alpha=2, z1=z2=32, h_{max} = 8*h\).}
+    \caption{Skalierbarkeit des Mehrgitterverfahrens. Die Effizienz konvergiert gegen \(\frac{2}{3}\). Konfiguration: \(alpha=2, z1=z2=32, h_{max} = 8*h\).}
     \label{tab:e}
 \end{table}
 
 %\subsection*{f)}
-\begin{table}[ht]
+\begin{table}
     \centering
     \begin{tabular}{|l|r|r|r|r|r|r|} \hline
     & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & & \multicolumn{2}{c|}{Approx. Fehler} \\
