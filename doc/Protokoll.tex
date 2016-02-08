@@ -22,7 +22,7 @@ Alle Performance-Messungen wurden auf dem Rechner \emph{i82sn03} mit 4~OpenMP-Th
 
 \section{Jakobi- und Gauß-Seidel-Verfahren}
 
-Bei der Darstellung des maximalen Approximationsfehlers in Abbildung~\ref{fig:fehler} ist die unterschiedlich schnelle Konvergenz des Jakobi"= und des Gauß"=Seidel"=Verfahrens deutlich erkennbar. Beide Verfahren näheren sich logarithmisch der analytisch Lösung an.
+Bei der Darstellung des maximalen Approximationsfehlers in Abbildung~\ref{fig:fehler} ist die unterschiedlich schnelle Konvergenz des Jakobi"= und des Gauß"=Seidel"=Verfahrens deutlich erkennbar. Beide Verfahren näheren sich logarithmisch der analytischen Lösung an.
 
 \begin{figure}
     \centering
@@ -49,7 +49,7 @@ Bei der Darstellung des maximalen Approximationsfehlers in Abbildung~\ref{fig:fe
     \label{tab:jakobi}
 \end{table}
 
-Die Datenabhängigkeiten im Gauß"=Seidel"=Verfahren erschweren die Parallelisierung. Zumindest alle Felder auf der Diagonalen des Ergebnisvektors lassen sich aber parallel verarbeiten. Von hier aus kann diese Diagonale dann Feld für Feld über den Ergebnisvektor verschoben werden, sodass bis zu \(\frac{1}{h} - 1\) Threads gleichzeitig arbeiten können.
+Die Datenabhängigkeiten im Gauß"=Seidel"=Verfahren erschweren die Parallelisierung. Zumindest alle Felder auf der Diagonalen des Ergebnisvektors lassen sich aber parallel verarbeiten. Von hier aus kann diese Diagonale dann horizontal Feld für Feld über den Ergebnisvektor verschoben werden, sodass bis zu \(\frac{1}{h} - 1\) Threads gleichzeitig arbeiten können.
 
 %\begin{figure}
 %    \centering
@@ -58,7 +58,7 @@ Die Datenabhängigkeiten im Gauß"=Seidel"=Verfahren erschweren die Parallelisie
 %    \label{fig:gaussseidelskizze}
 %\end{figure}
 
-Abbildung~\ref{fig:gaussseideldreiecke} skizziert eine Verbesserung der Threadauslastung, bei der voneinander abhängige Felder in Gruppen zusammengefasst werden, die wiederum unabhängig voneinander bearbeitet werden können. Dies verringert den Synchronisierungs"=Overhead, da einzelne Threads mehr Daten am Stück bearbeiten können.
+Abbildung~\ref{fig:gaussseideldreiecke} skizziert eine Verbesserung der Threadauslastung, bei der voneinander abhängige Felder in Gruppen zusammengefasst werden. Gruppen sind dabei voneinander unabhängig und können parallel bearbeitet werden. Dies verringert den Synchronisierungs"=Overhead, da einzelne Threads mehr Daten am Stück bearbeiten können. Allerdings verringert sich die Skalierung, da weniger Arbeitspakete generiert werden. Dies spielt jedoch bei ausreichend großer Feinheit keine Rolle.
 
 \begin{figure}
     \centering
@@ -89,7 +89,7 @@ Abbildung~\ref{fig:gaussseideldreiecke} skizziert eine Verbesserung der Threadau
 
 \emph{Warum ist es aus Sicht der Numerik nicht sinnvoll sofort auf einem groben Gitter zu beginnen, sondern zunächst einige Schritte auf einem feinen Gitter durchzuführen?}
 
-Ein grobes Gitter führt zwangsläufig zu Undersampling. Gerade bei hochfrequenten Funktionen entstehen dadurch schwerwiegende Aliasingeffekte, die sich auch durch die Ausführung von Gauß"=Seidel nicht verringern lassen, da die Informationen schlicht im Startvektor nicht enthalten sind. Deshalb sollte man zunächst auf feineren Gittern iterieren. Dadurch erstellt man einen Startvektor, der zwar dieselbe Feinheit hat, jedoch auch Informationen aus den hochfrequenten Teilen der Funktionen beinhaltet. Dieses Verfahren führt zur Glättung des Fehlers, der zwangsläufig durch Aliasing entsteht.
+Ein grobes Gitter führt zwangsläufig zu Undersampling. Gerade bei hochfrequenten Funktionen entstehen dadurch schwerwiegende Aliasingeffekte, die sich auch durch die Ausführung von Gauß"=Seidel nicht verringern lassen, da die hochfrequenten Informationen schlicht im Startvektor nicht enthalten sind. Deshalb sollte man zunächst auf feineren Gittern iterieren. Dadurch erstellt man einen Startvektor, der zwar dieselbe Feinheit hat, jedoch auch Informationen aus den hochfrequenten Teilen der Funktionen beinhaltet. Dieses Verfahren führt zur Glättung des Fehlers, der zwangsläufig durch Aliasing entsteht.
 
 Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnisse und vergleichen Algorithmen und Parameter"=Konfigurationen miteinander. Obwohl der Speedup nicht so hoch ist, dominiert das Mehrgitterverfahren die beiden anderen Algorithmen für große Gitter, sowohl was die Laufzeit, als auch (zumindest wenn \(alpha=2\) ist) was den Fehler angeht.
 
