@@ -1,4 +1,8 @@
-Protokoll.aux
-Protokoll.log
-Protokoll.pdf
+*.pdf
+*.aux
+*.log
 *-eps-converted-to.pdf
+*.nav
+*.out
+*.snm
+*.toc

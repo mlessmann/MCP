@@ -1,13 +1,18 @@
 IMAGES := $(wildcard *.jpg)
+IMAGES += $(wildcard *.eps)
 
-Protokoll.pdf: Protokoll.tex Protokoll.aux $(IMAGES)
+.PHONY: all
+all: Protokoll.pdf Praesentation.pdf
+
+%.pdf: %.tex %.aux $(IMAGES)
 	pdflatex $<
 
-Protokoll.aux: Protokoll.tex
+%.aux: %.tex
 	pdflatex $<
 
 .PHONY: clean
 clean:
-	rm -f Protokoll.aux
-	rm -f Protokoll.log
+	rm -f *.aux
+	rm -f *.log
 	rm -f *-eps-converted-to.pdf
+	rm -f *.nav *.out *.snm *.toc
