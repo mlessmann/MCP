@@ -1,4 +1,5 @@
 \documentclass{beamer}
+\usetheme{Frankfurt} % http://deic.uab.es/~iblanes/beamer_gallery/
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -11,10 +12,10 @@
 
 \begin{document}
 
-\subject{Praktikum Multicore"=Programmierung}
+%\subject{Praktikum Multicore"=Programmierung}
 \title{Projekt~6: Mehrgittermethoden}
 \author{Florian Klemme \and Manuel Leßmann}
-%\maketitle
+\date{17.~Februar 2016}
 
 \begin{frame}
     \titlepage
@@ -25,6 +26,12 @@
 \begin{frame}
     \frametitle{Jakobi und Gauß-Seidel}
     Hier vielleicht die beiden Quellcode Zeilen, an denen der Unterschied zu sehen ist?
+    \begin{block}{Jakobi}
+        int i = 3;
+    \end{block}
+    \begin{block}{Gauß-Seidel}
+        int i = 5;
+    \end{block}
 \end{frame}
 
 \begin{frame}
@@ -53,7 +60,6 @@
 
 \begin{frame}
     \frametitle{Speedup und Effizienz: Jakobi Verfahren}
-    \centering
     \small
     \begin{tabular}{|r|r|r|r|r|r|r|} \hline
     & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & & \multicolumn{2}{c|}{Approx. Fehler} \\
@@ -71,7 +77,6 @@
 
 \begin{frame}
     \frametitle{Speedup und Effizienz: Gauß-Seidel Verfahren}
-    \centering
     \small
     \begin{tabular}{|r|r|r|r|r|r|r|} \hline
     & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & & \multicolumn{2}{c|}{Approx. Fehler} \\
