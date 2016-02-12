@@ -114,10 +114,24 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Parallelisierung Gauß-Seidel}
-    Ansatz: Wavefront-Muster
-    TODO: Bilder, die wavefront Datenabhängigkeiten zeigen
-    \includegraphics[width=0.5\textwidth]{gaussseidelskizze}
+    \frametitle{Ansatz: Wavefront-Muster}
+    \centering\includegraphics[width=0.5\textwidth]{wavefront-datadependencies}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Ansatz: Wavefront-Muster}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \includegraphics[width=\textwidth]{wavefront1}
+                        
+            \centering Iteration $n$
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \includegraphics[width=\textwidth]{wavefront2}
+            
+            \centering Iteration $n+1$
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}
