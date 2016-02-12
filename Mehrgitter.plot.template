@@ -4,6 +4,6 @@ set terminal postscript eps size 5,3 enhanced color \
 
 # Plot
 set grid
-set zrange [-0.5:1.5]
+#set zrange [-0.5:1.5]
 #set output "Mehrgitter.eps"
 #splot "*.matrix" matrix using 1:2:3 with lines
