@@ -140,8 +140,32 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Parallelisierung Gauß-Seidel}
-    \includegraphics[width=\textwidth]{gaussseideldreiecke}
+    \frametitle{Ansatz: Wavefront-Muster}
+    Probleme:
+    \begin{itemize}
+        \item Die Granularität der Arbeitspakete ist zu fein
+        \item Schlechte Cache-Effizienz innerhalb eines Threads
+    \end{itemize}
+    Lösung:
+    \begin{itemize}
+        \item Zusammenfassen von Arbeitspaketen
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Wavefront-Gruppierung}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \includegraphics[width=\textwidth]{triangles1}
+                        
+            \centering Iteration $n$
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \includegraphics[width=\textwidth]{triangles2}
+            
+            \centering Iteration $n+1$
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}
