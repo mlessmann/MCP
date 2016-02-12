@@ -51,7 +51,7 @@
 \end{frame}
 
 \section{Jakobi- und Gauß-Seidel-Verfahren}
-\subsection{Die Verfahren im Vergleich}
+\subsection{Beschreibung}
 \begin{frame}
     \frametitle{Jakobi und Gauß-Seidel}
     \begin{block}{Jakobi}
@@ -215,7 +215,7 @@
     v_{2i,2j}^{h} & = v_{i,j}^{2h} \\
     v_{2i,2j+1}^{h} & = \frac{1}{2}(v_{i,j}^{2h} + v_{i,j+1}^{2h}) \\
     v_{2i+1,2j}^{h} & = \frac{1}{2}(v_{i,j}^{2h} + v_{i+1,j}^{2h}) \\
-    v_{2i+1,2j+1}^{h} & = \frac{1}{4}(v_{i,j}^{2h} + v_{i,j+1}^{2h} + v_{i+1,j}^{2h} + v_{i+1,j+1}^{2h})s
+    v_{2i+1,2j+1}^{h} & = \frac{1}{4}(v_{i,j}^{2h} + v_{i,j+1}^{2h} + v_{i+1,j}^{2h} + v_{i+1,j+1}^{2h})
     \end{split}
     \end{equation}
 \end{frame}
@@ -253,15 +253,22 @@
 
 \subsection{Parallelisierung mit OpenMP}
 \begin{frame}
-    \frametitle{Parallelisierung}
+    \frametitle{Parallelisierung Mehrgitter}
+    Profiling: Aufrufe von Gauß-Seidel machen 95\% der Laufzeit aus
+    \begin{itemize}
+        \item Wiederverwendung der parallelen Gauß-Seidel Implementierung ist sinnvoll
+        \item Interpolation und Restriktion haben keine Datenabhängigkeiten: trivial parallelisierbar
+        \item Bei $alpha > 1$: Zwischen den rekursiven Aufrufen gibt es Datenabhängigkeiten
+        \item Barrieren auch zwischen Glättung und Interpolation bzw. Restriktion notwendig
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Effizienz: Mehrgitterverfahren}
+    \frametitle{Parallelisierung Mehrgitter: Effizienz}
     \includegraphics[width=\textwidth]{plots/effizienzmehrgitter}
 \end{frame}
 
-\section{Vergleich der Verfahren}
+\section{Vergleich der Ergebnisse}
 \subsection*{blubb}
 \begin{frame}
     \frametitle{Laufzeiten im Vergleich}
