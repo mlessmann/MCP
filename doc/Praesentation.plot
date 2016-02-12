@@ -30,3 +30,15 @@ plot "benchmark-mehrgitter.csv" every 96::1  using 1:9 with lines title "alpha=1
      "benchmark-mehrgitter.csv" every 96::33 using 1:9 with lines title "alpha=1, z=16, hmax=16", \
      "benchmark-mehrgitter.csv" every 96::49 using 1:9 with lines title "alpha=2, z=4,  hmax=4 ", \
      "benchmark-mehrgitter.csv" every 96::81 using 1:9 with lines title "alpha=2, z=16, hmax=16"
+
+# Laufzeiten
+set yrange [*:*]
+set logscale y 2
+
+set output "plots/laufzeitensequenziell.eps"
+plot "benchmark-jakobi.csv"       using 1:2 with lines title "Jakobi, sequenziell", \
+     "benchmark-gauss-seidel.csv" using 1:2 with lines title "Gauss-Seidel, sequenziell"
+
+set output "plots/laufzeitenparallel.eps"
+plot "benchmark-jakobi.csv"       using 1:3 with lines title "Jakobi, parallel", \
+     "benchmark-gauss-seidel.csv" using 1:3 with lines title "Gauss-Seidel, parallel"
