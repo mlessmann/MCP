@@ -103,7 +103,7 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Speedup und Effizienz: Jakobi Verfahren}
+    \frametitle{Parallelisierung Jakobi: Effizienz}
     \includegraphics[width=\textwidth]{plots/effizienzjakobi}
 \end{frame}
 
@@ -169,7 +169,7 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Speedup und Effizienz: Gauß-Seidel Verfahren}
+    \frametitle{Parallelisierung Gauß-Seidel: Effizienz}
     \includegraphics[width=\textwidth]{plots/effizienzgaussseidel}
 \end{frame}
 
@@ -180,16 +180,44 @@
 \end{frame}
 
 \section{Mehrgitter-Verfahren}
-\subsection{Bla}
+\subsection{Beschreibung}
 \begin{frame}
     \frametitle{Mehrgitter"=Verfahren}
-    Hier erklären. Was ist das Problem / was ist die Idee?
+    Problem:
+    \begin{itemize}
+        \item Bei feinen Gittern dauern die einzelnen Iterationen zu lange
+        \item Sowohl das Jakobi- als auch das Gauß-Seidel-Verfahren konvergieren nur langsam
+    \end{itemize}
+    Idee:
+    \begin{itemize}
+        \item Verbesserung des Startwertes durch Vorberechnungen auf gröberen Gittern
+        \item Dadurch weniger Iterationen auf feinem Gitter nötig
+    \end{itemize}
 \end{frame}
 
-\subsection{Restriktion und Interpolation}
+\begin{frame}
+    \frametitle{Mehrgitter"=Verfahren}
+    \includegraphics[width=\textwidth]{valgorithmus}
+
+    Parameter:
+    \begin{itemize}
+        \item z1 / z2: Anzahl Iterationen bei der Glättung
+        \item h-max: Wie grob wird das Gitter maximal
+        \item alpha: Anzahl der Rekursionen
+    \end{itemize}
+\end{frame}
+
 \begin{frame}
     \frametitle{Restriktion und Interpolation}
-    Hier vielleicht das schicke Bild von der Vorlesung oder ähnliches.
+    Grob nach fein: bilineare Interpolation
+    \begin{equation}
+    \begin{split}
+    v_{2i,2j}^{h} & = v_{i,j}^{2h} \\
+    v_{2i,2j+1}^{h} & = \frac{1}{2}(v_{i,j}^{2h} + v_{i,j+1}^{2h}) \\
+    v_{2i+1,2j}^{h} & = \frac{1}{2}(v_{i,j}^{2h} + v_{i+1,j}^{2h}) \\
+    v_{2i+1,2j+1}^{h} & = \frac{1}{4}(v_{i,j}^{2h} + v_{i,j+1}^{2h} + v_{i+1,j}^{2h} + v_{i+1,j+1}^{2h})s
+    \end{split}
+    \end{equation}
 \end{frame}
 
 \subsection{Alpha"=Wert} % TODO: Besserer Titel?
