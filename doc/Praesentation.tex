@@ -102,25 +102,82 @@
 \section{Mehrgitter-Verfahren}
 \begin{frame}
     \frametitle{Mehrgitter"=Verfahren}
-    Hier erklären. Vielleicht die hüpsche Skizze aus der Vorlesung mit den Pfeilen?
+    Hier erklären. Was ist das Problem / was ist die Idee?
 \end{frame}
 
-% ...
+\subsection{Restriktion und Interpolation}
+\begin{frame}
+    \frametitle{Restriktion und Interpolation}
+    Hier vielleicht das schicke Bild von der Vorlesung oder ähnliches.
+\end{frame}
 
+\subsection{Alpha"=Wert} % TODO: Besserer Titel?
+\begin{frame}
+    \frametitle{Alpha"=Wert}
+    V"= und W"=Muster zeigen. Einfluss vom Alpha"=Wert erklären.
+\end{frame}
 
+\begin{frame}
+    \frametitle{Fehlerverbesserung bei geringen \(z\)"=Werten}
+    \begin{center}
+    \begin{tabular}{|r|r|r|r|} \hline
+    & & \multicolumn{2}{c|}{Approx. Fehler} \\
+    n    & alpha & Mittel & Maximum \\ \hline \hline
+    256  & 1     & 0,0771 & 0,1962  \\
+    256  & 2     & 0,0771 & 0,1962  \\
+    512  & 1     & 0,0431 & 0,1052  \\
+    512  & 2     & 0,0431 & 0,1053  \\
+    1024 & 1     & 0,0321 & 0,0853  \\
+    1024 & 2     & 0,0222 & 0,0548  \\
+    2048 & 1     & 0,2341 & 0,5783  \\
+    2048 & 2     & 0,0111 & 0,0289  \\ \hline
+    \end{tabular}
+    \end{center}
+    Konfiguration: \(z_1 = z_2 = 4, h_{max} = 16 \cdot h\)
+\end{frame}
+
+\subsection{Beispiel graphisch dargestellt}
+\begin{frame}
+    \frametitle{Bild 1...}
+    Hier die Bilder der verschiedenen Schritte?
+\end{frame}
+
+\subsection{Speedup und Effizienz}
+\begin{frame}
+    \frametitle{Skalierbarkeit des Mehrgitterverfahrens}
+    \begin{center}
+    \begin{tabular}{|r|r|r|r|r|} \hline
+    & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & \\
+    n    & Sequentiell & Parallel & Speedup & Effizienz \\ \hline \hline
+    16   & 0,0004      & 0,0072   & 0,0567  & 0,0142    \\
+    32   & 0,0016      & 0,0139   & 0,1124  & 0,0281    \\
+    64   & 0,0067      & 0,0379   & 0,1765  & 0,0441    \\
+    128  & 0,0350      & 0,1045   & 0,3352  & 0,0838    \\
+    256  & 0,1422      & 0,1522   & 0,9338  & 0,2334    \\
+    512  & 0,5698      & 0,3205   & 1,7780  & 0,4445    \\
+    1024 & 2,3061      & 0,9857   & 2,3397  & 0,5849    \\
+    2048 & 9,2382      & 3,6254   & 2,5482  & 0,6371    \\ \hline
+    \end{tabular}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Laufzeiten im Vergleich}
+    \footnotesize
+    \begin{tabular}{|l|r|r|r|r|r|r|} \hline
+    & \multicolumn{2}{c|}{Laufzeit in Sek.} & & & \multicolumn{2}{c|}{Approx. Fehler} \\
+    Algorithmus & Seq.    & Parallel & Speedup & Effizienz & Mittel   & Maximum \\ \hline \hline
+    Jakobi      & 33,9062 & 19,2902  & 1,7577  & 0,4394    & 0,4443   & 0,9990  \\
+    Gauß-Seidel & 52,3843 & 19,5082  & 2,6853  & 0,6713    & 0,4436   & 0,9981  \\
+    Mehrgitter  & 2,5800  & 1,3330   & 1,9354  & 0,4838    & 0,0111   & 0,0289  \\ \hline
+    \end{tabular}
+\end{frame}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Alter Kram aus dem Protokoll ab hier. TODO: Löschen.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-\emph{Warum ist es aus Sicht der Numerik nicht sinnvoll sofort auf einem groben Gitter zu beginnen, sondern zunächst einige Schritte auf einem feinen Gitter durchzuführen?}
-
-Ein grobes Gitter führt zwangsläufig zu Undersampling. Gerade bei hochfrequenten Funktionen entstehen dadurch schwerwiegende Aliasingeffekte, die sich auch durch die Ausführung von Gauß"=Seidel nicht verringern lassen, da die hochfrequenten Informationen schlicht im Startvektor nicht enthalten sind. Deshalb sollte man zunächst auf feineren Gittern iterieren. Dadurch erstellt man einen Startvektor, der zwar dieselbe Feinheit hat, jedoch auch Informationen aus den hochfrequenten Teilen der Funktionen beinhaltet. Dieses Verfahren führt zur Glättung des Fehlers, der zwangsläufig durch Aliasing entsteht.
-
-Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnisse und vergleichen Algorithmen und Parameter"=Konfigurationen miteinander. Obwohl der Speedup nicht so hoch ist, dominiert das Mehrgitterverfahren die beiden anderen Algorithmen für große Gitter, sowohl was die Laufzeit, als auch (zumindest wenn \(alpha=2\) ist) was den Fehler angeht.
 
 %\subsection*{b)}
 \begin{table}
@@ -147,58 +204,6 @@ Die Tabellen~\ref{tab:b} bis~\ref{tab:f} zeigen verschiedene Benchmark"=Ergebnis
     \end{tabular}
     \caption{Mehrgitter"=Verfahren: Offensichtlich hat \(z2\) einen deutlich größeren Einfluss auf den Fehler als \(z1\). Konfiguration: \(n=256, h_{max}=4 \cdot h, alpha=1\).}
     \label{tab:b}
-\end{table}
-
-%\subsection*{c)}
-\begin{table}
-    \centering
-    \begin{tabular}{|r|r|r|r|} \hline
-    & & \multicolumn{2}{c|}{Approx. Fehler} \\
-    n    & alpha & Mittel & Maximum \\ \hline \hline
-    256  & 1     & 0,0771 & 0,1962  \\
-    256  & 2     & 0,0771 & 0,1962  \\
-    512  & 1     & 0,0431 & 0,1052  \\
-    512  & 2     & 0,0431 & 0,1053  \\
-    1024 & 1     & 0,0321 & 0,0853  \\
-    1024 & 2     & 0,0222 & 0,0548  \\
-    2048 & 1     & 0,2341 & 0,5783  \\
-    2048 & 2     & 0,0111 & 0,0289  \\ \hline
-    \end{tabular}
-    \caption{Ein höherer Alpha"=Wert führt besonders bei großer Gitterfeinheit und wenig Iterationen zu deutlich geringeren Fehlern. Konfiguration: \(z1=z2=4, h_{max} = 16 \cdot h\).}
-    \label{tab:c}
-\end{table}
-
-%\subsection*{e)}
-\begin{table}
-    \centering
-    \begin{tabular}{|r|r|r|r|r|} \hline
-    & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & \\
-    n    & Sequentiell & Parallel & Speedup & Effizienz \\ \hline \hline
-    16   & 0,0004      & 0,0072   & 0,0567  & 0,0142    \\
-    32   & 0,0016      & 0,0139   & 0,1124  & 0,0281    \\
-    64   & 0,0067      & 0,0379   & 0,1765  & 0,0441    \\
-    128  & 0,0350      & 0,1045   & 0,3352  & 0,0838    \\
-    256  & 0,1422      & 0,1522   & 0,9338  & 0,2334    \\
-    512  & 0,5698      & 0,3205   & 1,7780  & 0,4445    \\
-    1024 & 2,3061      & 0,9857   & 2,3397  & 0,5849    \\
-    2048 & 9,2382      & 3,6254   & 2,5482  & 0,6371    \\ \hline
-    \end{tabular}
-    \caption{Skalierbarkeit des Mehrgitterverfahrens. Die Effizienz konvergiert gegen \(\frac{2}{3}\). Konfiguration: \(alpha=2, z1=z2=32, h_{max} = 8 \cdot h\).}
-    \label{tab:e}
-\end{table}
-
-%\subsection*{f)}
-\begin{table}
-    \centering
-    \begin{tabular}{|l|r|r|r|r|r|r|} \hline
-    & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & & \multicolumn{2}{c|}{Approx. Fehler} \\
-    Algorithmus & Sequentiell & Parallel & Speedup & Effizienz & Mittel   & Maximum \\ \hline \hline
-    Jakobi      & 33,9062     & 19,2902  & 1,7577  & 0,4394    & 0,4443   & 0,9990  \\
-    Gauß-Seidel & 52,3843     & 19,5082  & 2,6853  & 0,6713    & 0,4436   & 0,9981  \\
-    Mehrgitter  & 2,5800      & 1,3330   & 1,9354  & 0,4838    & 0,0111   & 0,0289  \\ \hline
-    \end{tabular}
-    \caption{Bei einer Beschränkung auf 1000~Iterationen kommt die Stärke des Mehrgitter"=Verfahrens deutlich zum Vorschein. Konfiguration: \(n=2048, alpha=2, z1=z2=4, h_{max}=16 \cdot h\).}
-    \label{tab:f}
 \end{table}
 
 \end{document}
