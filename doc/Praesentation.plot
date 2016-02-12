@@ -24,3 +24,9 @@ plot "benchmark-jakobi.csv" using 1:5 with lines title "Effizienz"
 
 set output "plots/effizienzgaussseidel.eps"
 plot "benchmark-gauss-seidel.csv" using 1:5 with lines title "Effizienz"
+
+set output "plots/effizienzmehrgitter.eps"
+plot "benchmark-mehrgitter.csv" every 96::1  using 1:9 with lines title "alpha=1, z=4,  hmax=4 ", \
+     "benchmark-mehrgitter.csv" every 96::33 using 1:9 with lines title "alpha=1, z=16, hmax=16", \
+     "benchmark-mehrgitter.csv" every 96::49 using 1:9 with lines title "alpha=2, z=4,  hmax=4 ", \
+     "benchmark-mehrgitter.csv" every 96::81 using 1:9 with lines title "alpha=2, z=16, hmax=16"
