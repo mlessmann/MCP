@@ -1,5 +1,6 @@
 IMAGES := $(wildcard *.jpg)
 IMAGES += $(wildcard *.eps)
+IMAGES += $(wildcard plots/*.eps)
 
 .PHONY: all
 all: Protokoll.pdf Praesentation.pdf
@@ -16,3 +17,4 @@ clean:
 	rm -f *.log
 	rm -f *-eps-converted-to.pdf
 	rm -f *.nav *.out *.snm *.toc
+	rm -f plots/*-eps-converted-to.pdf
