@@ -51,6 +51,7 @@
 \end{frame}
 
 \section{Jakobi- und Gauß-Seidel-Verfahren}
+\subsection{Die Verfahren im Vergleich}
 \begin{frame}
     \frametitle{Jakobi und Gauß-Seidel}
     \begin{block}{Jakobi}
@@ -78,16 +79,11 @@
     \end{block}
     \begin{block}{Qualitätsmetriken}
         \begin{itemize}
+            \item Laufzeit
             \item Maximaler Fehler zur analytischen Lösung
             \item Mittlerer Fehler zur analytischen Lösung
         \end{itemize}
     \end{block}
-\end{frame}
-
-\subsection{Konvergenz}
-\begin{frame}
-    \frametitle{Konvergenz der Verfahren}
-    \includegraphics[width=\textwidth]{plots/fehlerpres}
 \end{frame}
 
 \subsection{Parallelisierung mit OpenMP}
@@ -107,10 +103,15 @@
 \end{frame}
 
 \begin{frame}
+    \frametitle{Speedup und Effizienz: Jakobi Verfahren}
+    \includegraphics[width=\textwidth]{plots/effizienzjakobi}
+\end{frame}
+
+\begin{frame}
     \frametitle{Parallelisierung Gauß-Seidel}
     Datenabhängigkeiten innerhalb einer Iteration!
     \begin{itemize}
-        \item Neuer Wert abhängig von den Werten links und oberhalb aus der aktuellen Iteration
+        \item Neuer Wert ist abhängig von den Nachbarn links und oberhalb aus der aktuellen Iteration.
     \end{itemize}
     Also: keine triviale Methode möglich.
 \end{frame}
@@ -143,18 +144,19 @@
     \includegraphics[width=\textwidth]{gaussseideldreiecke}
 \end{frame}
 
-\subsection{Speedup und Effizienz}
-\begin{frame}
-    \frametitle{Speedup und Effizienz: Jakobi Verfahren}
-    \includegraphics[width=\textwidth]{plots/effizienzjakobi}
-\end{frame}
-
 \begin{frame}
     \frametitle{Speedup und Effizienz: Gauß-Seidel Verfahren}
     \includegraphics[width=\textwidth]{plots/effizienzgaussseidel}
 \end{frame}
 
+\subsection{Konvergenz}
+\begin{frame}
+    \frametitle{Konvergenz der Verfahren}
+    \includegraphics[width=\textwidth]{plots/fehlerpres}
+\end{frame}
+
 \section{Mehrgitter-Verfahren}
+\subsection{Bla}
 \begin{frame}
     \frametitle{Mehrgitter"=Verfahren}
     Hier erklären. Was ist das Problem / was ist die Idee?
