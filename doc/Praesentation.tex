@@ -1,5 +1,5 @@
 \documentclass{beamer}
-\usetheme{Frankfurt} % http://deic.uab.es/~iblanes/beamer_gallery/
+\usetheme{boxes} % http://deic.uab.es/~iblanes/beamer_gallery/
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -21,20 +21,41 @@
     \titlepage
 \end{frame}
 
-\section*{Übersicht}
+\section*{Agenda}
 \begin{frame}
     \tableofcontents
+    \frametitle{Agenda}
 \end{frame}
 
 \section{Jakobi- und Gauß-Seidel-Verfahren}
 \begin{frame}
     \frametitle{Jakobi und Gauß-Seidel}
-    Hier vielleicht die beiden Quellcode Zeilen, an denen der Unterschied zu sehen ist?
     \begin{block}{Jakobi}
-        int i = 3;
+        \(u_{i,j}^{k} = (u_{i,j-1}^{k-1} + u_{i-1,j}^{k-1}
+                       + u_{i,j+1}^{k-1} + u_{i+1,j}^{k-1}
+                       + h^2 \cdot f(i \cdot h, j \cdot h)) \cdot 0.25;\)
     \end{block}
     \begin{block}{Gauß-Seidel}
-        int i = 5;
+        \(u_{i,j}^{k} = (u_{i,j-1}^{k} + u_{i-1,j}^{k}
+                       + u_{i,j+1}^{k-1} + u_{i+1,j}^{k-1}
+                       + h^2 \cdot f(i \cdot h, j \cdot h)) \cdot 0.25;\)
+    \end{block}
+    \centering\includegraphics[width=0.4\textwidth]{jakobi-grid}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Jakobi und Gauß-Seidel}
+    \begin{block}{Abbruchbedingungen}
+        \begin{itemize}
+            \item Maximale Anzahl an Iterationen
+            \item Maximale Änderung zwischen zwei Iterationen unterschreitet Grenzwert
+        \end{itemize}
+    \end{block}
+    \begin{block}{Qualitätsmetriken}
+        \begin{itemize}
+            \item Maximaler Fehler zur analytischen Lösung
+            \item Mittlerer Fehler zur analytischen Lösung
+        \end{itemize}
     \end{block}
 \end{frame}
 
@@ -44,13 +65,19 @@
     \includegraphics[width=\textwidth]{fehlerpresentation}
 \end{frame}
 
-\subsection{Parallelisierung der Verfahren}
+\subsection{Parallelisierung mit OpenMP}
 \begin{frame}
-    \frametitle{Parallelisierung der Verfahren}
+    \frametitle{Parallelisierung Jakobi}
+    Trivial parallelisierbar:
     \begin{itemize}
-        \item Jakobi ist naiv parallelisierbar, keine Datenabhängigkeiten.
-        \item Gauß"=Seidel hat Datenabhängigkeiten innerhalb einer Iteration.
-        \item \dots
+        \item Keine Datenabhängigkeiten innerhalb einer Iteration
+        \item Reduktion der Abbruchbedingung
+        \item Statische Lastverteilung, da jedes Arbeitspaket gleich groß ist
+        \item Ping-Pong-Verfahren zum effizienten Zugriff auf die vorherige Iteration
+    \end{itemize}
+    Aber:
+    \begin{itemize}
+        \item Hoher Overhead, da eine einzelne Iteration nicht sehr lange dauert
     \end{itemize}
 \end{frame}
 
@@ -137,16 +164,16 @@
 \end{frame}
 
 \subsection{Beispiel graphisch dargestellt}
-\begin{frame}\frametitle{Beispielfunktion als Plott}\includegraphics[width=\textwidth]{plots/000}\end{frame}
-\begin{frame}\frametitle{Beispielfunktion als Plott}\includegraphics[width=\textwidth]{plots/001}\end{frame}
-\begin{frame}\frametitle{Beispielfunktion als Plott}\includegraphics[width=\textwidth]{plots/002}\end{frame}
-\begin{frame}\frametitle{Beispielfunktion als Plott}\includegraphics[width=\textwidth]{plots/003}\end{frame}
-\begin{frame}\frametitle{Beispielfunktion als Plott}\includegraphics[width=\textwidth]{plots/004}\end{frame}
-\begin{frame}\frametitle{Beispielfunktion als Plott}\includegraphics[width=\textwidth]{plots/005}\end{frame}
-\begin{frame}\frametitle{Beispielfunktion als Plott}\includegraphics[width=\textwidth]{plots/006}\end{frame}
-\begin{frame}\frametitle{Beispielfunktion als Plott}\includegraphics[width=\textwidth]{plots/007}\end{frame}
-\begin{frame}\frametitle{Beispielfunktion als Plott}\includegraphics[width=\textwidth]{plots/008}\end{frame}
-\begin{frame}\frametitle{Beispielfunktion als Plott}\includegraphics[width=\textwidth]{plots/009}\end{frame}
+\begin{frame}\frametitle{Beispielfunktion als Plot}\includegraphics[width=\textwidth]{plots/000}\end{frame}
+\begin{frame}\frametitle{Beispielfunktion als Plot}\includegraphics[width=\textwidth]{plots/001}\end{frame}
+\begin{frame}\frametitle{Beispielfunktion als Plot}\includegraphics[width=\textwidth]{plots/002}\end{frame}
+\begin{frame}\frametitle{Beispielfunktion als Plot}\includegraphics[width=\textwidth]{plots/003}\end{frame}
+\begin{frame}\frametitle{Beispielfunktion als Plot}\includegraphics[width=\textwidth]{plots/004}\end{frame}
+\begin{frame}\frametitle{Beispielfunktion als Plot}\includegraphics[width=\textwidth]{plots/005}\end{frame}
+\begin{frame}\frametitle{Beispielfunktion als Plot}\includegraphics[width=\textwidth]{plots/006}\end{frame}
+\begin{frame}\frametitle{Beispielfunktion als Plot}\includegraphics[width=\textwidth]{plots/007}\end{frame}
+\begin{frame}\frametitle{Beispielfunktion als Plot}\includegraphics[width=\textwidth]{plots/008}\end{frame}
+\begin{frame}\frametitle{Beispielfunktion als Plot}\includegraphics[width=\textwidth]{plots/009}\end{frame}
 
 \subsection{Speedup und Effizienz}
 \begin{frame}
@@ -179,11 +206,10 @@
     \end{tabular}
 \end{frame}
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Alter Kram aus dem Protokoll ab hier. TODO: Löschen.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\iffalse
 
 %\subsection*{b)}
 \begin{table}
@@ -211,5 +237,59 @@
     \caption{Mehrgitter"=Verfahren: Offensichtlich hat \(z2\) einen deutlich größeren Einfluss auf den Fehler als \(z1\). Konfiguration: \(n=256, h_{max}=4 \cdot h, alpha=1\).}
     \label{tab:b}
 \end{table}
+
+%\subsection*{c)}
+\begin{table}
+    \centering
+    \begin{tabular}{|r|r|r|r|} \hline
+    & & \multicolumn{2}{c|}{Approx. Fehler} \\
+    n    & alpha & Mittel & Maximum \\ \hline \hline
+    256  & 1     & 0,0771 & 0,1962  \\
+    256  & 2     & 0,0771 & 0,1962  \\
+    512  & 1     & 0,0431 & 0,1052  \\
+    512  & 2     & 0,0431 & 0,1053  \\
+    1024 & 1     & 0,0321 & 0,0853  \\
+    1024 & 2     & 0,0222 & 0,0548  \\
+    2048 & 1     & 0,2341 & 0,5783  \\
+    2048 & 2     & 0,0111 & 0,0289  \\ \hline
+    \end{tabular}
+    \caption{Ein höherer Alpha"=Wert führt besonders bei großer Gitterfeinheit und wenig Iterationen zu deutlich geringeren Fehlern. Konfiguration: \(z1=z2=4, h_{max} = 16 \cdot h\).}
+    \label{tab:c}
+\end{table}
+
+%\subsection*{e)}
+\begin{table}
+    \centering
+    \begin{tabular}{|r|r|r|r|r|} \hline
+    & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & \\
+    n    & Sequentiell & Parallel & Speedup & Effizienz \\ \hline \hline
+    16   & 0,0004      & 0,0072   & 0,0567  & 0,0142    \\
+    32   & 0,0016      & 0,0139   & 0,1124  & 0,0281    \\
+    64   & 0,0067      & 0,0379   & 0,1765  & 0,0441    \\
+    128  & 0,0350      & 0,1045   & 0,3352  & 0,0838    \\
+    256  & 0,1422      & 0,1522   & 0,9338  & 0,2334    \\
+    512  & 0,5698      & 0,3205   & 1,7780  & 0,4445    \\
+    1024 & 2,3061      & 0,9857   & 2,3397  & 0,5849    \\
+    2048 & 9,2382      & 3,6254   & 2,5482  & 0,6371    \\ \hline
+    \end{tabular}
+    \caption{Skalierbarkeit des Mehrgitterverfahrens. Die Effizienz konvergiert gegen \(\frac{2}{3}\). Konfiguration: \(alpha=2, z1=z2=32, h_{max} = 8 \cdot h\).}
+    \label{tab:e}
+\end{table}
+
+%\subsection*{f)}
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|r|r|r|r|} \hline
+    & \multicolumn{2}{c|}{Laufzeit in Sekunden} & & & \multicolumn{2}{c|}{Approx. Fehler} \\
+    Algorithmus & Sequentiell & Parallel & Speedup & Effizienz & Mittel   & Maximum \\ \hline \hline
+    Jakobi      & 33,9062     & 19,2902  & 1,7577  & 0,4394    & 0,4443   & 0,9990  \\
+    Gauß-Seidel & 52,3843     & 19,5082  & 2,6853  & 0,6713    & 0,4436   & 0,9981  \\
+    Mehrgitter  & 2,5800      & 1,3330   & 1,9354  & 0,4838    & 0,0111   & 0,0289  \\ \hline
+    \end{tabular}
+    \caption{Bei einer Beschränkung auf 1000~Iterationen kommt die Stärke des Mehrgitter"=Verfahrens deutlich zum Vorschein. Konfiguration: \(n=2048, alpha=2, z1=z2=4, h_{max}=16 \cdot h\).}
+    \label{tab:f}
+\end{table}
+
+\fi
 
 \end{document}
