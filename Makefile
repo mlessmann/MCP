@@ -13,7 +13,8 @@ all: benchmark
 	# Mehrgitter Plot:
 	cp Mehrgitter.plot.template Mehrgitter.plot
 	for file in *.matrix; do \
-	    echo "splot '$$file' matrix using 1:2:3 with lines" >> Mehrgitter.plot; \
+	    echo "set output '$$file.eps'" >> Mehrgitter.plot; \
+	    echo "splot '$$file' matrix using 1:2:3 with lines title 'Datenvektor'" >> Mehrgitter.plot; \
 	done
 	gnuplot Mehrgitter.plot
 

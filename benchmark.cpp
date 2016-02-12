@@ -26,8 +26,8 @@ static const int    seed                 = 0;
 
 // Eingabefunktion
 double f(double x, double y) {
-    //return 32 * (x * (1 - x) + y * (1 - y));
-    return 32 * std::sin(5 * x * M_PI) * std::sin(3 * y * M_PI);
+    return 32 * (x * (1 - x) + y * (1 - y));
+    //return 32 * std::sin(5 * x * M_PI) * std::sin(3 * y * M_PI);
 }
 
 // Analytische Lösung
