@@ -51,6 +51,7 @@
 \end{frame}
 
 \section{Jakobi- und Gauß-Seidel-Verfahren}
+\subsection{Die Verfahren im Vergleich}
 \begin{frame}
     \frametitle{Jakobi und Gauß-Seidel}
     \begin{block}{Jakobi}
@@ -63,7 +64,9 @@
                        + u_{i,j+1}^{k-1} + u_{i+1,j}^{k-1}
                        + h^2 \cdot f(i \cdot h, j \cdot h)) \cdot 0.25;\)
     \end{block}
-    \centering\includegraphics[width=0.4\textwidth]{jakobi-grid}
+    \begin{center}
+        \includegraphics[width=0.4\textwidth]{jakobi-grid}
+    \end{center}
 \end{frame}
 
 \begin{frame}
@@ -76,16 +79,11 @@
     \end{block}
     \begin{block}{Qualitätsmetriken}
         \begin{itemize}
+            \item Laufzeit
             \item Maximaler Fehler zur analytischen Lösung
             \item Mittlerer Fehler zur analytischen Lösung
         \end{itemize}
     \end{block}
-\end{frame}
-
-\subsection{Konvergenz}
-\begin{frame}
-    \frametitle{Konvergenz der Verfahren}
-    \includegraphics[width=\textwidth]{fehlerpresentation}
 \end{frame}
 
 \subsection{Parallelisierung mit OpenMP}
@@ -105,17 +103,24 @@
 \end{frame}
 
 \begin{frame}
+    \frametitle{Speedup und Effizienz: Jakobi Verfahren}
+    \includegraphics[width=\textwidth]{plots/effizienzjakobi}
+\end{frame}
+
+\begin{frame}
     \frametitle{Parallelisierung Gauß-Seidel}
     Datenabhängigkeiten innerhalb einer Iteration!
     \begin{itemize}
-        \item Neuer Wert abhängig von den Werten links und oberhalb aus der aktuellen Iteration
+        \item Neuer Wert ist abhängig von den Nachbarn links und oberhalb aus der aktuellen Iteration.
     \end{itemize}
     Also: keine triviale Methode möglich.
 \end{frame}
 
 \begin{frame}
     \frametitle{Ansatz: Wavefront-Muster}
-    \centering\includegraphics[width=0.5\textwidth]{wavefront-datadependencies}
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{wavefront-datadependencies}
+    \end{center}
 \end{frame}
 
 \begin{frame}
@@ -124,12 +129,12 @@
         \begin{column}{0.5\textwidth}
             \includegraphics[width=\textwidth]{wavefront1}
                         
-            \centering Iteration $n$
+            \centering Iteration \(n\)
         \end{column}
         \begin{column}{0.5\textwidth}
             \includegraphics[width=\textwidth]{wavefront2}
             
-            \centering Iteration $n+1$
+            \centering Iteration \(ni + 1\)
         \end{column}
     \end{columns}
 \end{frame}
@@ -163,18 +168,19 @@
     \end{columns}
 \end{frame}
 
-\subsection{Speedup und Effizienz}
-\begin{frame}
-    \frametitle{Speedup und Effizienz: Jakobi Verfahren}
-    \includegraphics[width=\textwidth]{benchmarkjakobi}
-\end{frame}
-
 \begin{frame}
     \frametitle{Speedup und Effizienz: Gauß-Seidel Verfahren}
-    \includegraphics[width=\textwidth]{benchmarkgaussseidel}
+    \includegraphics[width=\textwidth]{plots/effizienzgaussseidel}
+\end{frame}
+
+\subsection{Konvergenz}
+\begin{frame}
+    \frametitle{Konvergenz der Verfahren}
+    \includegraphics[width=\textwidth]{plots/fehlerpres}
 \end{frame}
 
 \section{Mehrgitter-Verfahren}
+\subsection{Bla}
 \begin{frame}
     \frametitle{Mehrgitter"=Verfahren}
     Hier erklären. Was ist das Problem / was ist die Idee?
