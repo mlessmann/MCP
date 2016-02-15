@@ -58,10 +58,11 @@ set ylabel "Fehler"
 unset logscale y
 
 set output "plots/fehlermehrgitter.eps"
-plot "benchmark-mehrgitter.csv" every 96::3  using 1:10 with lines title "Mittlerer Fehler, alpha=1", \
-     "benchmark-mehrgitter.csv" every 96::51 using 1:10 with lines title "Mittlerer Fehler, alpha=2", \
-     "benchmark-mehrgitter.csv" every 96::3  using 1:11 with lines title "Maximaler Fehler, alpha=1", \
-     "benchmark-mehrgitter.csv" every 96::51 using 1:11 with lines title "Maximaler Fehler, alpha=2"
+# Startoffset '2'
+plot "benchmark-mehrgitter.csv" every 96::195 using 1:10 with lines title "Mittlerer Fehler, alpha=1", \
+     "benchmark-mehrgitter.csv" every 96::243 using 1:10 with lines title "Mittlerer Fehler, alpha=2", \
+     "benchmark-mehrgitter.csv" every 96::195 using 1:11 with lines title "Maximaler Fehler, alpha=1", \
+     "benchmark-mehrgitter.csv" every 96::243 using 1:11 with lines title "Maximaler Fehler, alpha=2"
 
 set yrange [0:0.6]
 set output "plots/fehlermittel.eps"
