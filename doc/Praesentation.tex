@@ -140,7 +140,7 @@
         \begin{column}{0.5\textwidth}
             \includegraphics[width=\textwidth]{wavefront2}
             
-            \centering Iteration \(ni + 1\)
+            \centering Iteration \(n + 1\)
         \end{column}
     \end{columns}
 \end{frame}
@@ -214,22 +214,19 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Restriktion und Interpolation}
-    Grob nach fein: bilineare Interpolation
-    \begin{equation}
-    \begin{split}
-    v_{2i,2j}^{h} & = v_{i,j}^{2h} \\
-    v_{2i,2j+1}^{h} & = \frac{1}{2}(v_{i,j}^{2h} + v_{i,j+1}^{2h}) \\
-    v_{2i+1,2j}^{h} & = \frac{1}{2}(v_{i,j}^{2h} + v_{i+1,j}^{2h}) \\
-    v_{2i+1,2j+1}^{h} & = \frac{1}{4}(v_{i,j}^{2h} + v_{i,j+1}^{2h} + v_{i+1,j}^{2h} + v_{i+1,j+1}^{2h})
-    \end{split}
-    \end{equation}
-\end{frame}
-
-\begin{frame}
     \frametitle{Einfluss des Alpha"=Wertes}
     \framesubtitle{\(z_1 = z_2 = 4, h_{max} = 16 \cdot h\)}
     \includegraphics[width=\textwidth]{plots/fehlermehrgitter}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Restriktion und Interpolation}
+    Grob nach fein: bilineare Interpolation
+    
+    Fein nach grob: Restriktion
+    \begin{center}
+        \includegraphics[width=0.4\textwidth]{interpolation}
+    \end{center}
 \end{frame}
 
 \subsection{Grafisches Beispiel}
@@ -266,6 +263,14 @@
 %    \includegraphics<13>[trim=25 0 25 0, clip, width=\textwidth]{kaputt/012}
 %    \includegraphics<14>[trim=25 0 25 0, clip, width=\textwidth]{kaputt/013}
 %\end{frame}
+
+\begin{frame}
+    \frametitle{Interpolation}
+    Besser wäre:
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{interpolation2}
+    \end{center}
+\end{frame}
 
 \subsection{Parallelisierung mit OpenMP}
 \begin{frame}
