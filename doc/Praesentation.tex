@@ -279,31 +279,22 @@
 
 \section{Vergleich der Verfahren}
 \subsection*{blubb}
-\begin{frame}
-    \frametitle{Laufzeiten im Vergleich}
-    \footnotesize
-    \begin{tabular}{|l|r|r|r|r|r|r|} \hline
-    & \multicolumn{2}{c|}{Laufzeit in Sek.} & & & \multicolumn{2}{c|}{Approx. Fehler} \\
-    Algorithmus & Seq.    & Parallel & Speedup & Effizienz & Mittel   & Maximum \\ \hline \hline
-    Jakobi      & 33,9062 & 19,2902  & 1,7577  & 0,4394    & 0,4443   & 0,9990  \\
-    Gauß-Seidel & 52,3843 & 19,5082  & 2,6853  & 0,6713    & 0,4436   & 0,9981  \\
-    Mehrgitter  & 2,5800  & 1,3330   & 1,9354  & 0,4838    & 0,0111   & 0,0289  \\ \hline
-    \end{tabular}
-\end{frame}
 
 \begin{frame}
     \frametitle{Effizienz}
-    \framesubtitle{$z=16, hmax=4, alpha=1$}
+    \framesubtitle{1000 Iterationen, $z=16, hmax=4, alpha=1$}
     \includegraphics[width=\textwidth]{plots/effizienz}
 \end{frame}
 
 \begin{frame}
-    \frametitle{1000~Iterationen sequenziell}
+    \frametitle{Laufzeit sequentiell}
+    \framesubtitle{1000 Iterationen, $z=16, hmax=4, alpha=1$}
     \includegraphics[width=\textwidth]{plots/laufzeitensequenziell}
 \end{frame}
 
 \begin{frame}
-    \frametitle{1000~Iterationen parallel}
+    \frametitle{Laufzeit parallel}
+    \framesubtitle{1000 Iterationen, $z=16, hmax=4, alpha=1$}
     \includegraphics[width=\textwidth]{plots/laufzeitenparallel}
 \end{frame}
 
