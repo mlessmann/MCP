@@ -44,3 +44,14 @@ plot "benchmark-jakobi.csv"       using 1:2 with lines title "Jakobi, sequenziel
 set output "plots/laufzeitenparallel.eps"
 plot "benchmark-jakobi.csv"       using 1:3 with lines title "Jakobi, parallel", \
      "benchmark-gauss-seidel.csv" using 1:3 with lines title "Gauss-Seidel, parallel"
+
+# Mehrgitterfehler
+set ylabel  "Mittlerer Fehler"
+set y2label "Maximaler Fehler"
+unset logscale y
+
+set output "plots/fehlermehrgitter.eps"
+plot "benchmark-mehrgitter.csv" every 96::3  using 1:10 with lines title "Mittlerer Fehler, alpha = 1", \
+     "benchmark-mehrgitter.csv" every 96::51 using 1:10 with lines title "Mittlerer Fehler, alpha = 2", \
+     "benchmark-mehrgitter.csv" every 96::3  using 1:11 with lines title "Maximaler Fehler, alpha = 1" axis x1y2, \
+     "benchmark-mehrgitter.csv" every 96::51 using 1:11 with lines title "Maximaler Fehler, alpha = 2" axis x1y2

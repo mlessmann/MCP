@@ -63,12 +63,12 @@
     \begin{block}{Jakobi}
         \(u_{i,j}^{k} = (u_{i,j-1}^{k-1} + u_{i-1,j}^{k-1}
                        + u_{i,j+1}^{k-1} + u_{i+1,j}^{k-1}
-                       + h^2 \cdot f(i \cdot h, j \cdot h)) \cdot 0.25;\)
+                       + h^2 \cdot f(i \cdot h, j \cdot h)) \mathbin{/} 4\)
     \end{block}
     \begin{block}{Gauß-Seidel}
         \(u_{i,j}^{k} = (u_{i,j-1}^{k} + u_{i-1,j}^{k}
                        + u_{i,j+1}^{k-1} + u_{i+1,j}^{k-1}
-                       + h^2 \cdot f(i \cdot h, j \cdot h)) \cdot 0.25;\)
+                       + h^2 \cdot f(i \cdot h, j \cdot h)) \mathbin{/} 4\)
     \end{block}
     \begin{center}
         \includegraphics[width=0.4\textwidth]{jakobi-grid}
@@ -85,9 +85,9 @@
     \end{block}
     \begin{block}{Qualitätsmetriken}
         \begin{itemize}
-            \item Laufzeit
             \item Maximaler Fehler zur analytischen Lösung
             \item Mittlerer Fehler zur analytischen Lösung
+            \item Laufzeit des Algorithmus
         \end{itemize}
     \end{block}
 \end{frame}
@@ -228,21 +228,8 @@
 
 \begin{frame}
     \frametitle{Einfluss des Alpha"=Wertes}
-    \begin{center}
-    \begin{tabular}{|r|r|r|r|} \hline
-    & & \multicolumn{2}{c|}{Approx. Fehler} \\
-    n    & alpha & Mittel & Maximum \\ \hline \hline
-    256  & 1     & 0,0771 & 0,1962  \\
-    256  & 2     & 0,0771 & 0,1962  \\
-    512  & 1     & 0,0431 & 0,1052  \\
-    512  & 2     & 0,0431 & 0,1053  \\
-    1024 & 1     & 0,0321 & 0,0853  \\
-    1024 & 2     & 0,0222 & 0,0548  \\
-    2048 & 1     & 0,2341 & 0,5783  \\
-    2048 & 2     & 0,0111 & 0,0289  \\ \hline
-    \end{tabular}
-    \end{center}
-    Konfiguration: \(z_1 = z_2 = 4, h_{max} = 16 \cdot h\)
+    \framesubtitle{\(z_1 = z_2 = 4, h_{max} = 16 \cdot h\)}
+    \includegraphics[width=\textwidth]{plots/fehlermehrgitter}
 \end{frame}
 
 \subsection{Grafisches Beispiel}
