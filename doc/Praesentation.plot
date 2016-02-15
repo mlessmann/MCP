@@ -14,7 +14,7 @@ plot "fehlerJakobi.csv"      using 1:2 with lines title "Jakobi", \
 
 # Benchmarks
 set xlabel "Aufloesung des Gitters"
-unset ylabel
+set ylabel "Effizienz"
 unset logscale y
 set logscale x 2
 set yrange [0:1]
@@ -26,14 +26,15 @@ set output "plots/effizienzgaussseidel.eps"
 plot "benchmark-gauss-seidel.csv" using 1:5 with lines title "Effizienz"
 
 set output "plots/effizienzmehrgitter.eps"
-plot "benchmark-mehrgitter.csv" every 96::1  using 1:9 with lines title "alpha=1, z=4,  hmax=4 ", \
-     "benchmark-mehrgitter.csv" every 96::3  using 1:9 with lines title "alpha=1, z=4,  hmax=16", \
-     "benchmark-mehrgitter.csv" every 96::31 using 1:9 with lines title "alpha=1, z=16, hmax=4 ", \
-     "benchmark-mehrgitter.csv" every 96::33 using 1:9 with lines title "alpha=1, z=16, hmax=16"
+plot "benchmark-mehrgitter.csv" every 96::1  using 1:9 with lines title "z=4,  hmax=4 ", \
+     "benchmark-mehrgitter.csv" every 96::3  using 1:9 with lines title "z=4,  hmax=16", \
+     "benchmark-mehrgitter.csv" every 96::31 using 1:9 with lines title "z=16, hmax=4 ", \
+     "benchmark-mehrgitter.csv" every 96::33 using 1:9 with lines title "z=16, hmax=16"
 #     "benchmark-mehrgitter.csv" every 96::49 using 1:9 with lines title "alpha=2, z=4,  hmax=4 ", \
 #     "benchmark-mehrgitter.csv" every 96::81 using 1:9 with lines title "alpha=2, z=16, hmax=16"
 
 # Laufzeiten
+set ylabel "Laufzeit in Sekunden"
 set yrange [*:*]
 set logscale y 2
 
@@ -51,7 +52,7 @@ set y2label "Maximaler Fehler"
 unset logscale y
 
 set output "plots/fehlermehrgitter.eps"
-plot "benchmark-mehrgitter.csv" every 96::3  using 1:10 with lines title "Mittlerer Fehler, alpha = 1", \
-     "benchmark-mehrgitter.csv" every 96::51 using 1:10 with lines title "Mittlerer Fehler, alpha = 2", \
-     "benchmark-mehrgitter.csv" every 96::3  using 1:11 with lines title "Maximaler Fehler, alpha = 1" axis x1y2, \
-     "benchmark-mehrgitter.csv" every 96::51 using 1:11 with lines title "Maximaler Fehler, alpha = 2" axis x1y2
+plot "benchmark-mehrgitter.csv" every 96::3  using 1:10 with lines title "Mittlerer Fehler, alpha=1", \
+     "benchmark-mehrgitter.csv" every 96::51 using 1:10 with lines title "Mittlerer Fehler, alpha=2", \
+     "benchmark-mehrgitter.csv" every 96::3  using 1:11 with lines title "Maximaler Fehler, alpha=1" axis x1y2, \
+     "benchmark-mehrgitter.csv" every 96::51 using 1:11 with lines title "Maximaler Fehler, alpha=2" axis x1y2
