@@ -62,3 +62,14 @@ plot "benchmark-mehrgitter.csv" every 96::3  using 1:10 with lines title "Mittle
      "benchmark-mehrgitter.csv" every 96::51 using 1:10 with lines title "Mittlerer Fehler, alpha=2", \
      "benchmark-mehrgitter.csv" every 96::3  using 1:11 with lines title "Maximaler Fehler, alpha=1", \
      "benchmark-mehrgitter.csv" every 96::51 using 1:11 with lines title "Maximaler Fehler, alpha=2"
+
+set yrange [0:0.6]
+set output "plots/fehlermittel.eps"
+plot "benchmark-jakobi.csv"       using 1:6 with lines title "Jakobi", \
+     "benchmark-gauss-seidel.csv" using 1:6 with lines title "Gauss-Seidel", \
+     "benchmark-mehrgitter.csv"   every 96::31 using 1:10 with lines title "Mehrgitter"
+set yrange [0:1.3]
+set output "plots/fehlermaximal.eps"
+plot "benchmark-jakobi.csv"       using 1:7 with lines title "Jakobi", \
+     "benchmark-gauss-seidel.csv" using 1:7 with lines title "Gauss-Seidel", \
+     "benchmark-mehrgitter.csv"   every 96::31 using 1:11 with lines title "Mehrgitter"
