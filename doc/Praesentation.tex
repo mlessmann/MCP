@@ -110,6 +110,7 @@
 
 \begin{frame}
     \frametitle{Parallelisierung Jakobi: Effizienz}
+    \framesubtitle{1000 Iterationen}
     \includegraphics[width=\textwidth]{plots/effizienzjakobi}
 \end{frame}
 
@@ -134,13 +135,15 @@
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \includegraphics[width=\textwidth]{wavefront1}
-                        
-            \centering Iteration \(n\)
+            \begin{center}
+                Iteration $n$
+            \end{center}
         \end{column}
         \begin{column}{0.5\textwidth}
             \includegraphics[width=\textwidth]{wavefront2}
-            
-            \centering Iteration \(n + 1\)
+            \begin{center}
+                Iteration $n+1$
+            \end{center}
         \end{column}
     \end{columns}
 \end{frame}
@@ -163,19 +166,22 @@
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \includegraphics[width=\textwidth]{triangles1}
-                        
-            \centering Iteration $n$
+            \begin{center}
+                Iteration $n$
+            \end{center}
         \end{column}
         \begin{column}{0.5\textwidth}
             \includegraphics[width=\textwidth]{triangles2}
-            
-            \centering Iteration $n+1$
+            \begin{center}
+                Iteration $n+1$
+            \end{center}
         \end{column}
     \end{columns}
 \end{frame}
 
 \begin{frame}
     \frametitle{Parallelisierung Gauß-Seidel: Effizienz}
+    \framesubtitle{1000 Iterationen}
     \includegraphics[width=\textwidth]{plots/effizienzgaussseidel}
 \end{frame}
 
@@ -189,7 +195,7 @@
 \subsection{Beschreibung}
 \begin{frame}
     \frametitle{Mehrgitter"=Verfahren}
-    Problem:
+    Probleme bei den bisherigen Verfahren:
     \begin{itemize}
         \item Bei feinen Gittern dauern die einzelnen Iterationen zu lange
         \item Sowohl das Jakobi- als auch das Gauß-Seidel-Verfahren konvergieren nur langsam
@@ -232,6 +238,7 @@
 \subsection{Grafisches Beispiel}
 \begin{frame}
     \frametitle{Grafisches Beispiel}
+    \framesubtitle{$n=32, z=4, hmax=8 \cdot h, alpha=1$}
     \includegraphics<1>[trim=25 0 25 0, clip, width=\textwidth]{plots/000}
     \includegraphics<2>[trim=25 0 25 0, clip, width=\textwidth]{plots/001}
     \includegraphics<3>[trim=25 0 25 0, clip, width=\textwidth]{plots/002}
@@ -286,6 +293,7 @@
 
 \begin{frame}
     \frametitle{Parallelisierung Mehrgitter: Effizienz}
+    \framesubtitle{1000 Iterationen, $alpha=1$}
     \includegraphics[width=\textwidth]{plots/effizienzmehrgitter}
 \end{frame}
 
