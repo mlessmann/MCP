@@ -44,12 +44,14 @@ set yrange [*:*]
 set logscale y 2
 
 set output "plots/laufzeitensequenziell.eps"
-plot "benchmark-jakobi.csv"       using 1:2 with lines title "Jakobi, sequenziell", \
-     "benchmark-gauss-seidel.csv" using 1:2 with lines title "Gauss-Seidel, sequenziell"
+plot "benchmark-jakobi.csv"       using 1:2 with lines title "Jakobi", \
+     "benchmark-gauss-seidel.csv" using 1:2 with lines title "Gauss-Seidel", \
+     "benchmark-mehrgitter.csv"   every 96::31 using 1:6 with lines title "Mehrgitter"
 
 set output "plots/laufzeitenparallel.eps"
-plot "benchmark-jakobi.csv"       using 1:3 with lines title "Jakobi, parallel", \
-     "benchmark-gauss-seidel.csv" using 1:3 with lines title "Gauss-Seidel, parallel"
+plot "benchmark-jakobi.csv"       using 1:3 with lines title "Jakobi", \
+     "benchmark-gauss-seidel.csv" using 1:3 with lines title "Gauss-Seidel", \
+     "benchmark-mehrgitter.csv"   every 96::31 using 1:7 with lines title "Mehrgitter"
 
 # Mehrgitterfehler
 set ylabel "Fehler"
