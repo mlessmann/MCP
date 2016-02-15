@@ -33,6 +33,11 @@ plot "benchmark-mehrgitter.csv" every 96::1  using 1:9 with lines title "z=4,  h
 #     "benchmark-mehrgitter.csv" every 96::49 using 1:9 with lines title "alpha=2, z=4,  hmax=4 ", \
 #     "benchmark-mehrgitter.csv" every 96::81 using 1:9 with lines title "alpha=2, z=16, hmax=16"
 
+set output "plots/effizienz.eps"
+plot "benchmark-jakobi.csv"       using 1:5 with lines title "Jakobi", \
+     "benchmark-gauss-seidel.csv" using 1:5 with lines title "Gauss-Seidel", \
+     "benchmark-mehrgitter.csv"   every 96::31 using 1:9 with lines title "Mehrgitter"
+
 # Laufzeiten
 set ylabel "Laufzeit in Sekunden"
 set yrange [*:*]
