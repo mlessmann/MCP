@@ -88,7 +88,8 @@ void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
 
     double seqMeanError = computeMeanError(anaResult, seqResult);
     double seqMaxError = computeMaximumError(anaResult, seqResult);
-    std::cout << "Sequentiell: " << duration_cast<duration<double>>(seqTime).count()
+    double seqSeconds = duration_cast<duration<double>>(seqTime).count();
+    std::cout << "Sequentiell: " << seqSeconds
               << " sek, Mittlerer Fehler: " << seqMeanError
               << ", Maximaler Fehler: " << seqMaxError << "\n";
 
@@ -97,12 +98,13 @@ void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     auto parTime = std::chrono::high_resolution_clock::now() - time;
 
     double parMeanError = computeMeanError(seqResult, parResult);
-    std::cout << "Parallel: " << duration_cast<duration<double>>(parTime).count()
-              << " sek, Speedup: " << seqTime / parTime
+    double parSeconds = duration_cast<duration<double>>(parTime).count();
+    std::cout << "Parallel: " << parSeconds
+              << " sek, Speedup: " << seqSeconds / parSeconds
               << ", Mittlerer Fehler zu Seq: " << parMeanError <<  "\n";
 
-    if (seqResult != parResult)
-        std::cout << "Debug: Die Ergebnisvektoren sind nicht äquivalent!\n";
+    //if (seqResult != parResult)
+    //    std::cout << "Debug: Die Ergebnisvektoren sind nicht äquivalent!\n";
 }
 
 void jakobiBenchmark() {
