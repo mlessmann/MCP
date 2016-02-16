@@ -42,6 +42,7 @@ plot "benchmark-jakobi.csv"       using 1:5 with lines title "Jakobi", \
 set ylabel "Laufzeit in Sekunden"
 set yrange [*:*]
 set logscale y 2
+set key left
 
 set output "plots/laufzeitensequenziell.eps"
 plot "benchmark-jakobi.csv"       using 1:2 with lines title "Jakobi", \
@@ -56,6 +57,7 @@ plot "benchmark-jakobi.csv"       using 1:3 with lines title "Jakobi", \
 # Mehrgitterfehler
 set ylabel "Fehler"
 unset logscale y
+set key right
 
 set output "plots/fehlermehrgitter.eps"
 # Startoffset '2'
