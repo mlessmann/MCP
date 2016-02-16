@@ -4,7 +4,7 @@ set terminal postscript eps size 5,3 enhanced color \
 
 # Plot
 set grid
-#set zrange [-0.5:1.5]
+set zrange [-0.5:1.5]
 #set output "Mehrgitter.eps"
 #splot "*.matrix" matrix using 1:2:3 with lines
 
@@ -40,7 +40,7 @@ splot "005 - Mehrgitter Main, nach Gauss-Seidel.matrix" matrix using 1:2:3 with 
 
 set output "006.eps"
 set xrange [0:17]
-set yrange [0:33]
+set yrange [0:17]
 splot "006 - Mehrgitter Up, vor Gauss-Seidel.matrix" matrix using 1:2:3 with lines title "Up, vor Gauss-Seidel"
 
 set output "007.eps"
