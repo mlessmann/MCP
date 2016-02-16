@@ -104,7 +104,8 @@
     \end{itemize}
     Aber:
     \begin{itemize}
-        \item Hoher Overhead, da eine einzelne Iteration v.a. bei groben Gittern nicht sehr lange dauert
+        \item Nicht In-Place \(\rightarrow\) Speicheroverhead und potenziell weniger Cache-Hits
+        \item Synchronisierung nach jeder Iteration notwendig
     \end{itemize}
 \end{frame}
 
@@ -118,9 +119,9 @@
     \frametitle{Parallelisierung Gauß-Seidel}
     Datenabhängigkeiten innerhalb einer Iteration!
     \begin{itemize}
-        \item[$\rightarrow$] Neuer Wert ist abhängig von den Nachbarn links und oberhalb aus der aktuellen Iteration.
+        \item[\(\rightarrow\)] Neuer Wert ist abhängig von den Nachbarn links und oberhalb aus der aktuellen Iteration.
     \end{itemize}
-    Also: keine triviale Methode möglich.
+    Also: keine triviale Parallelisierung möglich.
 \end{frame}
 
 \begin{frame}
@@ -213,11 +214,11 @@
     \includegraphics[width=\textwidth]{valgorithmus}
 
     Parameter:
-    \begin{itemize}
-        \item z1 / z2: Anzahl Iterationen bei der Glättung
-        \item hmax: Wie grob wird das Gitter maximal
-        \item alpha: Anzahl der Rekursionen
-    \end{itemize}
+    \begin{description}
+        \item[z1 / z2:] Anzahl Iterationen bei der Glättung
+        \item[hmax:] Maximale Vergröberung des Gitters
+        \item[alpha:] Anzahl der Rekursionen
+    \end{description}
 \end{frame}
 
 \begin{frame}
