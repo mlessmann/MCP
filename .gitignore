@@ -33,6 +33,5 @@
 
 benchmark
 opencl
-Mehrgitter.eps
 *.matrix
-Mehrgitter.plot
+*.eps

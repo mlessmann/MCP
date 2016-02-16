@@ -18,8 +18,8 @@ static const int    z1_min               = 4;
 static const int    z1_max               = 4;
 static const int    z2_min               = 4;
 static const int    z2_max               = 4;
-static const int    h_max_factor_min     = 8;
-static const int    h_max_factor_max     = 8;
+static const int    h_max_factor_min     = 4;
+static const int    h_max_factor_max     = 4;
 static const double def_change_threshold = 1.0 / 1000;
 static const int    def_max_iterations   = 1000;
 static const int    seed                 = 0;
@@ -79,7 +79,7 @@ template <typename SeqFunc, typename ParFunc>
 void executeBenchmark(int n, SeqFunc seqFunc, ParFunc parFunc) {
     using namespace std::chrono;
     std::default_random_engine rand(seed);
-    std::uniform_real_distribution<double> dist(-10, 10); // Schön für die Grafik
+    std::uniform_real_distribution<double> dist(0, 1); // Schön für die Grafik
     auto startVector = createVector(n, [&](double, double) {return dist(rand);});
     auto anaResult = createVector(n, u);
     double h = 1.0 / (n + 1);
